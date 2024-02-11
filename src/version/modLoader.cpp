@@ -10,6 +10,10 @@ ModLoader::ModLoader()
 
 void ModLoader::Init()
 {
+    char buffer[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, buffer);
+    workingDirectory = std::string(buffer);
+    TimeStampDebug("Working Directory: " + workingDirectory);
     LoadConfig("./GlummyLoader.cfg");
     DumpIL2CPPBinary();
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)KeyboardHandler::KeyBoardLoop, this, 0, 0);
@@ -61,16 +65,6 @@ void ModLoader::LoadPlugin(const std::string& path)
 
 void ModLoader::LoadAllPlugins()
 {
-    char buffer[MAX_PATH];
-    GetCurrentDirectory(MAX_PATH, buffer);
-    pluginsPath = std::string(buffer) + "\\Plugins";
-
-    if (!std::filesystem::exists(pluginsPath))
-    {
-        PutDebug("Plugins folder does not exist, creating a new one.");
-        _mkdir(pluginsPath.c_str());
-    }
-
     for (const auto& entry : std::filesystem::directory_iterator(pluginsPath))
     {
         std::filesystem::path extension = entry.path().extension();
@@ -99,15 +93,8 @@ void ModLoader::UnloadAllPlugins()
 
 void ModLoader::DumpIL2CPPBinary()
 {
-    //Current app path
-    char buffer[MAX_PATH];
-    GetCurrentDirectory(MAX_PATH, buffer);
-
-    //Init path
-    appPath = std::string(buffer);
-
     //search and assign a folder that ends with _Data in the game directory
-    for (const auto& entry : std::filesystem::directory_iterator(appPath))
+    for (const auto& entry : std::filesystem::directory_iterator(workingDirectory))
     {
         //Get last 5 chars of the path
         std::string path = entry.path().string();
@@ -128,14 +115,21 @@ void ModLoader::DumpIL2CPPBinary()
         TimeStampDebug("Cannot find a game data folder, are you running a unity game?");
     }
 
-    TimeStampDebug("Game path: " + appPath);
+    TimeStampDebug("Game path: " + workingDirectory);
     TimeStampDebug("Data path: " + appDataPath);
 
-    gameAsmPath = appPath + "\\GameAssembly.dll";
+    gameAsmPath = workingDirectory + "\\GameAssembly.dll";
     gameMetadataPath = appDataPath + "\\il2cpp_data\\Metadata\\global-metadata.dat";
-    dumperPath = appPath + "\\dumper\\Il2CppDumper.exe";
-    dumpOutPath = appPath + "\\DumpedIL2CPP";
+    pluginsPath = workingDirectory + "\\Plugins";
+    dumperPath = workingDirectory + "\\dumper\\Il2CppDumper.exe";
+    addressGetterPath = workingDirectory + "\\AddressGetter\\AddressGetter.exe";
+    dumpOutPath = workingDirectory + "\\DumpedIL2CPP";
     command = " " + gameAsmPath + " " + gameMetadataPath + " " + dumpOutPath;
+
+    TimeStampDebug("Dumper path: " + dumperPath);
+    TimeStampDebug("AddressGetter path: " + addressGetterPath);
+    TimeStampDebug("Dumped IL2CPP path: " + dumpOutPath);
+    TimeStampDebug("Plugins path: " + pluginsPath);
 
     //Create the dumper folder if it doesn't exist
     if (!std::filesystem::exists(dumpOutPath))
@@ -148,8 +142,6 @@ void ModLoader::DumpIL2CPPBinary()
 
     PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
     STARTUPINFO StartupInfo; //This is an [in] parameter
-
-
     ZeroMemory(&StartupInfo, sizeof(StartupInfo));
     StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
 
@@ -171,8 +163,60 @@ void ModLoader::DumpIL2CPPBinary()
         TimeStampDebug("Failed to dump game assembly!");
     }
 
+    SatisfyAllPluginRequests();
     LoadAllPlugins();
 }
+
+void ModLoader::SatisfyAllPluginRequests()
+{
+    if (!std::filesystem::exists(pluginsPath))
+    {
+        PutDebug("Plugins folder does not exist, creating a new one.");
+        _mkdir(pluginsPath.c_str());
+    }
+
+    // Go through all json files in the plugins folder and iterate over them using the AddressGetter and a new process
+    for (const auto& entry : std::filesystem::directory_iterator(pluginsPath))
+    {
+        // Check if file ends with .json
+        std::filesystem::path extension = entry.path().extension();
+        if (extension == ".json")
+        {
+            // Start a new process to satisfy the plugin request
+            std::string jsonFile = entry.path().generic_string();
+            TimeStampDebug("Satisfying plugin request: " + jsonFile);
+
+            PROCESS_INFORMATION ProcessInfo; // This is what we get as an [out] parameter
+            STARTUPINFO StartupInfo; // This is an [in] parameter
+            ZeroMemory(&StartupInfo, sizeof(StartupInfo));
+
+            std::string command = " internal " + jsonFile + " useDefault false";
+            // Properly format command line arguments
+
+            TimeStampDebug("Starting address getter process with args: " + command);
+
+            if (CreateProcess(
+                addressGetterPath.c_str(),
+                const_cast<LPSTR>(command.c_str()),
+                NULL,
+                NULL,
+                FALSE,
+                0,
+                NULL,
+                NULL,
+                &StartupInfo,
+                &ProcessInfo))
+            {
+                WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+                CloseHandle(ProcessInfo.hThread);
+                CloseHandle(ProcessInfo.hProcess);
+
+                TimeStampDebug("Satisfied request!");
+            }
+        }
+    }
+}
+
 
 void KeyboardHandler::KeyBoardLoop(ModLoader* loaderInstance)
 {

@@ -1,137 +1,113 @@
-﻿using System.Globalization;
-using System.Text.Json;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using System.Xml.XPath;
 
-
-public class ScriptMethod
-{
-    public int Address { get; set; }
-    public string AddressHex { get; set; }
-    public string Name { get; set; }
-    public string DemangledName { get; set; }
-    public string Signature { get; set; }
-    public string TypeSignature { get; set; }
-
-    public ScriptMethod(int address, string name, string signature, string typeSignature)
-    {
-        Address = address;
-        AddressHex = $"0x{address:X}";
-        Name = name;
-        Signature = signature;
-        TypeSignature = typeSignature;
-        DemangledName = Demangle(name);
-    }
-
-    public static string Demangle(string str)
-    {
-        // Simple demangling for the provided examples
-        str = Regex.Replace(str, @"^<.*>\$\$.*_", "");
-        str = Regex.Replace(str, @"\$\$", "_");
-        str = Regex.Replace(str, @"__", "_");
-        return str;
-    }
-}
-
-public static class ScriptMethodExtensions
-{
-    private static void CopyFilesRecursively(string sourcePath, string targetPath)
-    {
-        if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
-
-        //Now Create all of the directories
-        foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
-        {
-            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
-        }
-
-        //Copy all the files & Replaces any files with the same name
-        foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
-        {
-            File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
-        }
-    }
-
-    public static void CreateCppHookFromMethod(ScriptMethod[] scriptMethods, string location)
-    {
-        string templatePath = "templates\\UnityLoaderPluginTemplate";
-        string projectName = location.Split('\\')[location.Split('\\').Length - 1];
-        CopyFilesRecursively(templatePath, location);
-
-        //Rename all folders that contain UnitLoaderPluginTemplate to the project name
-        foreach (string dirPath in Directory.GetDirectories(location, "UnityLoaderPluginTemplate*",
-                     SearchOption.AllDirectories))
-        {
-            Directory.Move(dirPath, dirPath.Replace("UnityLoaderPluginTemplate", projectName));
-        }
-
-        //Rename project in sln file
-        string slnPath = location + "\\UnityLoaderPluginTemplate.sln";
-        string slnContent = File.ReadAllText(slnPath);
-        slnContent = slnContent.Replace("UnityLoaderPluginTemplate",
-            projectName);
-        string newSlnPath = location + "\\" + projectName + ".sln";
-        File.WriteAllText(newSlnPath, slnContent);
-        File.Delete(slnPath);
-
-        //Rename project in vcxproj file
-        string vcxprojPath = location + $"\\{projectName}" + "\\UnityLoaderPluginTemplate.vcxproj";
-        string vcxprojContent = File.ReadAllText(vcxprojPath);
-        vcxprojContent = vcxprojContent.Replace("UnityLoaderPluginTemplate",
-            projectName);
-        string newVcxprojPath = location + "\\" + projectName + $"\\{projectName}.vcxproj";
-        File.WriteAllText(newVcxprojPath, vcxprojContent);
-        File.Delete(vcxprojPath);
-
-        //rename vcxproj.filters file
-        string vcxprojFiltersPath = location + $"\\{projectName}" + "\\UnityLoaderPluginTemplate.vcxproj.filters";
-        string vcxprojFiltersContent = File.ReadAllText(vcxprojFiltersPath);
-        vcxprojFiltersContent = vcxprojFiltersContent.Replace("UnityLoaderPluginTemplate",
-            projectName);
-        string newVcxprojFiltersPath = location + "\\" + projectName + $"\\{projectName}.vcxproj.filters";
-        File.WriteAllText(newVcxprojFiltersPath, vcxprojFiltersContent);
-        File.Delete(vcxprojFiltersPath);
-
-        //rename UnityLoaderPluginTemplate.rc file
-        string rcPath = location + $"\\{projectName}" + "\\UnityLoaderPluginTemplate.rc";
-        string rcContent = File.ReadAllText(rcPath);
-        rcContent = rcContent.Replace("UnityLoaderPluginTemplate",
-            projectName);
-        string newRcPath = location + "\\" + projectName + $"\\{projectName}.rc";
-        File.WriteAllText(newRcPath, rcContent);
-        File.Delete(rcPath);
-
-        string hooksHeader = location + $"\\{projectName}" + "\\hooks.h";
-        string offsetsHeader = location + $"\\{projectName}" + "\\offsets.h";
-
-        //Chage MODNAME in hooks.h
-        string hooksHeaderContent = File.ReadAllText(hooksHeader);
-        hooksHeaderContent = hooksHeaderContent.Replace("\"[ModName]\"", $"\"[{projectName}]\"");
-        File.WriteAllText(hooksHeader, hooksHeaderContent);
-
-        using (StreamWriter sw = File.AppendText(offsetsHeader))
-        {
-            //Add all addresses of methods to offsets.h
-            foreach (ScriptMethod scriptMethod in scriptMethods)
-            {
-                string methodAddress = scriptMethod.AddressHex;
-                string methodName = scriptMethod.DemangledName;
-                if (!methodName.Contains("<>"))
-                    sw.WriteLine("uintptr_t {0} = {1};", methodName, methodAddress);
-            }
-        }
-    }
-}
-
+namespace AddressGetter;
 
 class Program
 {
+    private static void DebugLineWithName(string msg)
+    {
+        Console.WriteLine($"[AdressGetter.exe]: {msg}");
+    }
+
     static void Main(string[] args)
+    {
+        string debugArgs = string.Empty;
+
+        debugArgs += "Got the arguments: ";
+        foreach (var arg in args)
+        {
+            debugArgs += arg + " ";
+        }
+
+        DebugLineWithName(debugArgs);
+
+        try
+        {
+            if (args.Length > 0)
+            {
+                if (args[0].Contains("internal"))
+                {
+                    if (args.Length >= 4)
+                    {
+                        InternalMain(args);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Not enough arguments for internal mode.");
+                    }
+                }
+                else
+                {
+                    StandaloneMain(args);
+                }
+            }
+            else
+            {
+                StandaloneMain(args);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("================= Exception message =================");
+            Console.WriteLine("An error during address getting occured: " + e.Message);
+            Console.WriteLine("================= Exception message end =================");
+            Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("================= Exception trace =================");
+            Console.WriteLine(e.StackTrace);
+            Console.WriteLine("================= Exception trace end =================");
+            Console.WriteLine(Environment.NewLine);
+        }
+    }
+
+
+    static void InternalMain(string[] args)
+    {
+        string requestFile = args[1];
+        string scriptsJson = args[2] != "useDefault" ? args[2] : Path.GetFullPath(@".\DumpedIL2CPP\script.json");
+        bool stealthPrint = bool.Parse(args[3]);
+
+        Requests.CallerRequests callerRequests =
+            JsonSerializer.Deserialize<Requests.CallerRequests>(
+                File.ReadAllText(requestFile))!;
+
+        DebugLineWithName(
+            $"{callerRequests.Caller} is requesting {callerRequests.OffsetRequests.Length} offsets, starting return process!");
+
+        Il2CPPScripts.DumpedScriptMethods dumpedScriptMethods = JsonSerializer.Deserialize<Il2CPPScripts
+            .DumpedScriptMethods>(File.ReadAllText(scriptsJson))!;
+
+        foreach (var method in dumpedScriptMethods.ScriptMethod)
+        {
+            string name = method.DemangledName;
+            foreach (var request in callerRequests.OffsetRequests)
+            {
+                if (name == request.SearchName)
+                {
+                    if (stealthPrint)
+                    {
+                        DebugLineWithName(method.AddressHex);
+                        request.Value = method.AddressHex;
+                        continue;
+                    }
+
+                    DebugLineWithName($"Found one request of {name} with address {method.AddressHex} in {scriptsJson}");
+                }
+            }
+        }
+
+        string newJson = JsonSerializer.Serialize(callerRequests);
+        File.WriteAllText(requestFile, newJson);
+    }
+
+    static void StandaloneMain(string[] args)
     {
         string inputFile;
         string searchFor;
         string outputFile;
-        DumpedFunctionClass dumpedFunctionClass;
+        Il2CPPScripts.DumpedScriptMethods dumpedScriptMethods;
 
         if (args.Length < 1)
         {
@@ -157,12 +133,12 @@ class Program
             outputFile = args[2];
         }
 
-        dumpedFunctionClass =
-            JsonSerializer.Deserialize<DumpedFunctionClass>(
+        dumpedScriptMethods =
+            JsonSerializer.Deserialize<Il2CPPScripts.DumpedScriptMethods>(
                 File.ReadAllText(inputFile));
 
-        Dictionary<string, ScriptMethod> methods = new();
-        foreach (var method in dumpedFunctionClass.ScriptMethod)
+        Dictionary<string, Il2CPPScripts.ScriptMethod> methods = new();
+        foreach (var method in dumpedScriptMethods.ScriptMethod)
         {
             foreach (var mn in searchFor.Split(','))
             {
@@ -173,7 +149,7 @@ class Program
 
                     Console.WriteLine("============================== Method found ==============================");
                     methods.Add(method.Name + "=" + "0x" + method.AddressHex, method);
-                    Console.WriteLine("Demangled name: " + ScriptMethod.Demangle(method.Name));
+                    Console.WriteLine("Demangled name: " + Il2CPPScripts.ScriptMethod.Demangle(method.Name));
                     Console.WriteLine("Method: " + method.Name + "\nMethod Address: " + method.AddressHex +
                                       Environment.NewLine);
                 }
@@ -196,16 +172,12 @@ class Program
             Console.WriteLine("Enter project path:");
             string projectPath = Console.ReadLine();
 
-            ScriptMethodExtensions.CreateCppHookFromMethod(methods.Values.ToArray(), projectPath + "\\" + projectName);
+            Il2CPPScripts.ScriptMethodExtensions.CreateCppHookFromMethod(methods.Values.ToArray(),
+                projectPath + "\\" + projectName);
             Console.WriteLine("Created project!");
         }
 
         Console.WriteLine("Press any key to exit...");
         Console.ReadKey();
     }
-}
-
-public class DumpedFunctionClass
-{
-    public ScriptMethod[] ScriptMethod { get; set; }
 }

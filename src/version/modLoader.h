@@ -34,14 +34,17 @@ public:
     void LoadAllPlugins();
     void UnloadAllPlugins();
     void DumpIL2CPPBinary();
+    void SatisfyAllPluginRequests();
 
 private:
+    std::string workingDirectory;
+
     std::string pluginsPath;
-    std::string appPath;
     std::string appDataPath;
     std::string gameAsmPath;
     std::string gameMetadataPath;
     std::string dumperPath;
+    std::string addressGetterPath;
     std::string command;
     std::string dumpOutPath;
     std::vector<HMODULE> loadedPlugins;
