@@ -7,4 +7,21 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>$(SolutionDir)\suite\AddressGetter</OutputPath>
+    </PropertyGroup>
+
+<PropertyGroup>
+  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+</PropertyGroup>
+
+
+    <ItemGroup>
+      <Folder Include="templates\" />
+        <Content Include="templates\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>

@@ -37,6 +37,8 @@ public static class ScriptMethodExtensions
 {
     private static void CopyFilesRecursively(string sourcePath, string targetPath)
     {
+        if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
+
         //Now Create all of the directories
         foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
         {
@@ -52,8 +54,9 @@ public static class ScriptMethodExtensions
 
     public static void CreateCppHookFromMethod(ScriptMethod[] scriptMethods, string location)
     {
+        string templatePath = "templates\\UnityLoaderPluginTemplate";
         string projectName = location.Split('\\')[location.Split('\\').Length - 1];
-        CopyFilesRecursively("templates\\UnityLoaderPluginTemplate", location);
+        CopyFilesRecursively(templatePath, location);
 
         //Rename all folders that contain UnitLoaderPluginTemplate to the project name
         foreach (string dirPath in Directory.GetDirectories(location, "UnityLoaderPluginTemplate*",
@@ -136,10 +139,10 @@ class Program
             inputFile = Console.ReadLine();
 
             Console.WriteLine(
-                "Please enter the method name you want to search for (seperatew by a comma if you want to search for multiple methods):");
+                "Please enter the method name you want to search for (separate by a comma if you want to search for multiple methods):");
             searchFor = Console.ReadLine();
 
-            Console.WriteLine("Please enter the output file path:");
+            Console.WriteLine("Please enter the output file path (leave empty to skip):");
             outputFile = Console.ReadLine();
 
             //Remove all double quotes 
@@ -167,9 +170,12 @@ class Program
                 {
                     //Skip if already added
                     if (methods.ContainsKey(method.Name + "=" + "0x" + method.AddressHex)) continue;
+
+                    Console.WriteLine("============================== Method found ==============================");
                     methods.Add(method.Name + "=" + "0x" + method.AddressHex, method);
-                    Console.WriteLine(ScriptMethod.Demangle(method.Name));
-                    Console.WriteLine("Method: " + method.Name + "\nMethod Address: " + method.AddressHex);
+                    Console.WriteLine("Demangled name: " + ScriptMethod.Demangle(method.Name));
+                    Console.WriteLine("Method: " + method.Name + "\nMethod Address: " + method.AddressHex +
+                                      Environment.NewLine);
                 }
             }
         }
@@ -194,6 +200,7 @@ class Program
             Console.WriteLine("Created project!");
         }
 
+        Console.WriteLine("Press any key to exit...");
         Console.ReadKey();
     }
 }
