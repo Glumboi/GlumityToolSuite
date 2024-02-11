@@ -166,6 +166,11 @@
   <ItemGroup>
     <ResourceCompile Include="UnityLoaderPluginTemplate.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="UnityLoaderPluginTemplate.offsetRequests.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

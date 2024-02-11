@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace AddressGetter;
 
@@ -57,7 +58,7 @@ public class Il2CPPScripts
             }
         }
 
-        public static void CreateCppHookFromMethod(ScriptMethod[] scriptMethods, string location)
+        public static void CreateCppHookFromMethods(ScriptMethod[] scriptMethods, string location)
         {
             string templatePath = "templates\\UnityLoaderPluginTemplate";
             string projectName = location.Split('\\')[location.Split('\\').Length - 1];
@@ -114,6 +115,8 @@ public class Il2CPPScripts
             hooksHeaderContent = hooksHeaderContent.Replace("\"[ModName]\"", $"\"[{projectName}]\"");
             File.WriteAllText(hooksHeader, hooksHeaderContent);
 
+            List<string> methodNamesDemangled = new();
+
             using (StreamWriter sw = File.AppendText(offsetsHeader))
             {
                 //Add all addresses of methods to offsets.h
@@ -121,10 +124,31 @@ public class Il2CPPScripts
                 {
                     string methodAddress = scriptMethod.AddressHex;
                     string methodName = scriptMethod.DemangledName;
+                    methodNamesDemangled.Add(methodName);
                     if (!methodName.Contains("<>"))
                         sw.WriteLine("uintptr_t {0} = {1};", methodName, methodAddress);
                 }
             }
+
+            string callerRequestsJsonFile = location + "\\" + projectName + "\\" + projectName + ".offsetRequests.json";
+
+            List<Requests.OffSetRequest> offsetRequests = new();
+            foreach (var name in methodNamesDemangled)
+            {
+                offsetRequests.Add(new Requests.OffSetRequest
+                {
+                    Value = "0xFFFFFF",
+                    SearchName = name
+                });
+            }
+
+            Requests.CallerRequests callerRequests = new Requests.CallerRequests
+            {
+                Caller = $"{projectName}",
+                OffsetRequests = offsetRequests.ToArray()
+            };
+
+            File.WriteAllText(callerRequestsJsonFile, JsonSerializer.Serialize(callerRequests));
         }
     }
 }

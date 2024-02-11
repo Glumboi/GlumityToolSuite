@@ -9,7 +9,6 @@ VOID Init()
     InitConsole();
     PutDebug("Loading");
     gameAsm = reinterpret_cast<uintptr_t>(GetModuleHandle(L"GameAssembly.dll"));
-
     MH_Initialize();
     CreateAndLoadHooks();
 }

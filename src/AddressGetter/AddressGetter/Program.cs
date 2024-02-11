@@ -86,10 +86,11 @@ class Program
             {
                 if (name == request.SearchName)
                 {
+                    request.Value = method.AddressHex;
+
                     if (stealthPrint)
                     {
                         DebugLineWithName(method.AddressHex);
-                        request.Value = method.AddressHex;
                         continue;
                     }
 
@@ -98,7 +99,10 @@ class Program
             }
         }
 
-        string newJson = JsonSerializer.Serialize(callerRequests);
+        string newJson = JsonSerializer.Serialize(callerRequests, JsonSerializerOptions.Default);
+
+        DebugLineWithName("New json contents for current request:\n" + newJson);
+
         File.WriteAllText(requestFile, newJson);
     }
 
@@ -172,7 +176,7 @@ class Program
             Console.WriteLine("Enter project path:");
             string projectPath = Console.ReadLine();
 
-            Il2CPPScripts.ScriptMethodExtensions.CreateCppHookFromMethod(methods.Values.ToArray(),
+            Il2CPPScripts.ScriptMethodExtensions.CreateCppHookFromMethods(methods.Values.ToArray(),
                 projectPath + "\\" + projectName);
             Console.WriteLine("Created project!");
         }
