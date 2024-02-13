@@ -17,6 +17,9 @@ void Init()
 {
     InitConsole();
 
+    //Clear log file
+    std::filesystem::remove(LOGFILE);
+
     //Load base address of GameAssembly.dll
     gameAssembly = reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll"));
 
@@ -36,6 +39,15 @@ void Init()
 
 void Main()
 {
+    //Check if we are already running
+    HANDLE hMutex = CreateMutex(NULL, TRUE, "GlummysPCBS2ModdingToolsuite");
+    if (GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        //We are already running, stop
+        CloseHandle(hMutex);
+        TimeStampDebug("An instance is already running, stopping duplicated instance...");
+        return;
+    }
     Init();
 }
 
@@ -48,6 +60,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
+
         break;
     }
     return TRUE;

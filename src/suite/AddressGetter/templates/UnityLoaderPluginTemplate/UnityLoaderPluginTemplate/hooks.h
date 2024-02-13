@@ -38,9 +38,11 @@ inline void CreateAndLoadHooks()
 
     //Example from my infinite money plugin:
     /*
+    uintptr_t getCashOffset = std::stoull(functionOffsets[0].value, nullptr, 16);
     MH_CreateHook(
         reinterpret_cast<LPVOID*>(gameAsm + getCashOffset),
         &CareerStatus__GetCash_hook,
+        (LPVOID*)&CareerStatus__GetCash_o);
      */
 
     MH_STATUS status = MH_EnableHook(MH_ALL_HOOKS); //Get the hook status, 0 = ALl good
