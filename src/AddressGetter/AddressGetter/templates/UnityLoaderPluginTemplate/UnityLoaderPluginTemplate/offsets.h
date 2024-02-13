@@ -1,10 +1,6 @@
 #pragma once
 #include <vector>
+#include "json.h"
 
 uintptr_t gameAsm;
-
-struct GameFunction
-{
-    uintptr_t offset;
-    std::string demangledName;
-};
+std::vector<OffsetRequest> functionOffsets;

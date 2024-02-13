@@ -113,6 +113,8 @@ public class Il2CPPScripts
             //Chage MODNAME in hooks.h
             string hooksHeaderContent = File.ReadAllText(hooksHeader);
             hooksHeaderContent = hooksHeaderContent.Replace("\"[ModName]\"", $"\"[{projectName}]\"");
+            hooksHeaderContent = hooksHeaderContent.Replace("\"\\\\Plugins\\\\ModName.offsetRequests.json\"",
+                $"\"\\\\Plugins\\\\{projectName}.offsetRequests.json\"");
             File.WriteAllText(hooksHeader, hooksHeaderContent);
 
             List<string> methodNamesDemangled = new();

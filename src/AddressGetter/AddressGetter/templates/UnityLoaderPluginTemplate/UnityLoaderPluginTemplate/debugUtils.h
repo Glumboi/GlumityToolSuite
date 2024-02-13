@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
-
 #include "hooks.h"
 
 inline void PutDebug(std::string msg)

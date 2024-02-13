@@ -1,22 +1,18 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
-#include <iostream>
 #include <MinHook.h>
 #include "debugUtils.h"
 
 VOID Init()
 {
     InitConsole();
-    PutDebug("Loading");
-    gameAsm = reinterpret_cast<uintptr_t>(GetModuleHandle(L"GameAssembly.dll"));
+    gameAsm = reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll"));
     MH_Initialize();
     CreateAndLoadHooks();
 }
 
-//Actual entry point
 VOID Main()
 {
-    //init
     Init();
 }
 

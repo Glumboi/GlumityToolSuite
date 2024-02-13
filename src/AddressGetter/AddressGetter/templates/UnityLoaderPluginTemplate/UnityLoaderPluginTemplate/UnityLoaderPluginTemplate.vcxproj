@@ -50,7 +50,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -150,6 +150,7 @@
     <ClInclude Include="debugUtils.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="hooks.h" />
+    <ClInclude Include="json.h" />
     <ClInclude Include="offsets.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
@@ -165,11 +166,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="UnityLoaderPluginTemplate.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="UnityLoaderPluginTemplate.offsetRequests.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

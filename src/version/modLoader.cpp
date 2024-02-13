@@ -37,7 +37,7 @@ void ModLoader::LoadConfig(const std::string fileName)
         size_t lastEq = sLine.find('=') + 1;
         std::string toggleSbStr = sLine.substr(lastEq, sLine.length() - lastEq);
         TimeStampDebug("LOAD ASI: " + toggleSbStr);
-        this->skipASI = toggleSbStr == "0";
+        skipASI = toggleSbStr == "0";
     }
 }
 
@@ -54,7 +54,8 @@ void ModLoader::LoadPlugin(const std::string& path)
         this->loadedPlugins.push_back(hModule);
         PutDebug("Loaded library: " + path);
 
-        // Retrieve and call the entry point function if needed
+        // Retrieve and call the entry point function if needed (idk if this will ever be used for something more specific
+        // doesnt really do anything)
         PluginEntryPoint entryPoint = reinterpret_cast<PluginEntryPoint>(GetProcAddress(hModule, "PluginEntryPoint"));
         if (entryPoint != nullptr)
         {
@@ -74,7 +75,7 @@ void ModLoader::LoadAllPlugins()
         }
         else if (extension == ".asi")
         {
-            if (!this->skipASI)
+            if (!skipASI)
             {
                 LoadPlugin(entry.path().string());
             }
@@ -84,11 +85,11 @@ void ModLoader::LoadAllPlugins()
 
 void ModLoader::UnloadAllPlugins()
 {
-    for (HMODULE hModule : this->loadedPlugins)
+    for (HMODULE hModule : loadedPlugins)
     {
         FreeLibrary(hModule);
     }
-    this->loadedPlugins.clear();
+    loadedPlugins.clear();
 }
 
 void ModLoader::DumpIL2CPPBinary()
