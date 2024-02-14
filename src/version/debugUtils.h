@@ -13,10 +13,10 @@ inline void DebugToFile(std::string szInput)
 
 inline void PutDebug(std::string msg)
 {
-    std::cout << "[GLUMMY LOADER]: " << msg << "\n";
+    std::cout << "[GlummyLoader]: " << msg << "\n";
 
     //Also log to file
-    DebugToFile("[GLUMMY LOADER]: " + msg);
+    DebugToFile("[GlummyLoader]: " + msg);
 }
 
 inline void TimeStampDebug(const std::string& msg)

@@ -110,8 +110,8 @@ void ModLoader::DumpIL2CPPBinary()
         if (last5 == "_Data")
         {
             appDataPath = path;
-            TimeStampDebug("Found Unity game data at: " + path + "\nContinuing in unity IL2CPP mode!");
-            TimeStampDebug("Above path is a game data folder, continuing...");
+            TimeStampDebug("Found Unity game data at: " + path );
+            TimeStampDebug("Continuing in unity IL2CPP mode!");
             break;
         }
     }
