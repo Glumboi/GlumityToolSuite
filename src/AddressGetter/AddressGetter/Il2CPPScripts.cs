@@ -108,39 +108,74 @@ public class Il2CPPScripts
             File.Delete(rcPath);
 
             string hooksHeader = location + $"\\{projectName}" + "\\hooks.h";
-            string offsetsHeader = location + $"\\{projectName}" + "\\offsets.h";
-
-            //Chage MODNAME in hooks.h
-            string hooksHeaderContent = File.ReadAllText(hooksHeader);
-            hooksHeaderContent = hooksHeaderContent.Replace("\"[ModName]\"", $"\"[{projectName}]\"");
-            hooksHeaderContent = hooksHeaderContent.Replace("\"\\\\Plugins\\\\ModName.offsetRequests.json\"",
-                $"\"\\\\Plugins\\\\{projectName}.offsetRequests.json\"");
-            File.WriteAllText(hooksHeader, hooksHeaderContent);
-
-            List<string> methodNamesDemangled = new();
-
-            using (StreamWriter sw = File.AppendText(offsetsHeader))
-            {
-                //Add all addresses of methods to offsets.h
-                foreach (ScriptMethod scriptMethod in scriptMethods)
-                {
-                    string methodAddress = scriptMethod.AddressHex;
-                    string methodName = scriptMethod.DemangledName;
-                    methodNamesDemangled.Add(methodName);
-                    if (!methodName.Contains("<>"))
-                        sw.WriteLine("uintptr_t {0} = {1};", methodName, methodAddress);
-                }
-            }
-
             string callerRequestsJsonFile = location + "\\" + projectName + "\\" + projectName + ".offsetRequests.json";
+            string hooksHeaderContent = File.ReadAllText(hooksHeader);
+
+            //Chage MODNAME in hooks.h and create hooks
+            hooksHeaderContent = hooksHeaderContent.Replace("\"[ModName]\"", $"\"[{projectName}]\"").Replace(
+                "\"\\\\Plugins\\\\ModName.offsetRequests.json\"",
+                $"\"\\\\Plugins\\\\{projectName}.offsetRequests.json\"");
 
             List<Requests.OffSetRequest> offsetRequests = new();
-            foreach (var name in methodNamesDemangled)
+            List<string> hooks = new();
+            bool createAutoHooks;
+            Console.WriteLine(
+                "Do you want to auto generate hooks for the functions (y/n)?\nThis can be buggy and may need manual editing!");
+            string autoGenYesNo = Console.ReadLine() ?? "n";
+            createAutoHooks = autoGenYesNo.ToLower() == "y";
+            foreach (var method in scriptMethods)
             {
+                // Continue with next iteration if method contains some mangled stuff, idk how safe this is, but it works...
+                // for now
+                if (method.DemangledName.Contains('<')) continue;
+
+                // Define regular expressions for extracting information
+                string returnTypePattern = @"(\w+)\s+"; // Matches the return type
+                string signatureTypesPattern = @"\((.*?)\)"; // Matches everything inside the parentheses
+                string signatureTypesWithNamesPattern = @"\b\w+\b(?:(?:,\s*)|$)"; // Matches only the names
+
+                // Extract return type
+                Match returnTypeMatch = Regex.Match(method.Signature, returnTypePattern);
+                string returnType = returnTypeMatch.Success ? returnTypeMatch.Groups[1].Value : "";
+
+                // Extract signature types
+                Match signatureTypesMatch = Regex.Match(method.Signature, signatureTypesPattern);
+                string signatureTypes = signatureTypesMatch.Success ? signatureTypesMatch.Groups[1].Value : "";
+
+                // Extract signature types with names
+                MatchCollection signatureTypesWithNamesMatches =
+                    Regex.Matches(method.Signature, signatureTypesWithNamesPattern);
+
+                string namesOnly = string.Join(" ", signatureTypesWithNamesMatches
+                    .Cast<Match>()
+                    .Select(match => match.Value.Trim()));
+
+                string signatureTypesWithoutNames = string.Empty;
+                string[] splittedSigTypes = signatureTypes.Split(',');
+                foreach (var type in splittedSigTypes)
+                {
+                    var span = type.AsSpan();
+                    int start = 0;
+                    int end = span.LastIndexOf(' ');
+
+                    string final = span.Slice(start, end).ToString() + ',';
+                    signatureTypesWithoutNames += final;
+                }
+
+                hooks.Add(new string($@"
+{returnType}(__fastcall* {method.DemangledName}_o)({signatureTypesWithoutNames});
+
+{returnType} __stdcall {method.DemangledName}_hook({signatureTypes})
+{{
+    return {method.DemangledName}_o({namesOnly});
+}}
+"));
+
                 offsetRequests.Add(new Requests.OffSetRequest
                 {
-                    Value = "0xFFFFFF",
-                    SearchName = name
+                    Value = method.AddressHex,
+                    SearchName = method.DemangledName,
+                    Signature = method.Signature
                 });
             }
 
@@ -151,6 +186,16 @@ public class Il2CPPScripts
             };
 
             File.WriteAllText(callerRequestsJsonFile, JsonSerializer.Serialize(callerRequests));
+
+            // Find the position of the first #define
+            int defineIndex = hooksHeaderContent.LastIndexOf("#define", StringComparison.Ordinal) + 2;
+
+            // Insert hooks after the first #define
+            if (createAutoHooks)
+                hooksHeaderContent = hooksHeaderContent.Insert(defineIndex, string.Join("\n", hooks));
+
+            // Write the modified content back to the file
+            File.WriteAllText(hooksHeader, hooksHeaderContent);
         }
     }
 }

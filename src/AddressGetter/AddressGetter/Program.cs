@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.Serialization.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
@@ -81,10 +82,10 @@ class Program
 
         foreach (var method in dumpedScriptMethods.ScriptMethod)
         {
-            string name = method.DemangledName;
+            string nameAndSignature = method.DemangledName + method.Signature;
             foreach (var request in callerRequests.OffsetRequests)
             {
-                if (name == request.SearchName)
+                if (nameAndSignature == request.SearchName + request.Signature)
                 {
                     request.Value = method.AddressHex;
 
@@ -94,13 +95,17 @@ class Program
                         continue;
                     }
 
-                    DebugLineWithName($"Found one request of {name} with address {method.AddressHex} in {scriptsJson}");
+                    DebugLineWithName(
+                        $"Found one request of {nameAndSignature}\nWith address: {method.AddressHex}\nIn: {scriptsJson}");
                 }
             }
         }
 
-        string newJson = JsonSerializer.Serialize(callerRequests, JsonSerializerOptions.Default);
-
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+        string newJson = JsonSerializer.Serialize(callerRequests, options);
         DebugLineWithName("New json contents for current request:\n" + newJson);
 
         File.WriteAllText(requestFile, newJson);
@@ -154,6 +159,7 @@ class Program
                     Console.WriteLine("============================== Method found ==============================");
                     methods.Add(method.Name + "=" + "0x" + method.AddressHex, method);
                     Console.WriteLine("Demangled name: " + Il2CPPScripts.ScriptMethod.Demangle(method.Name));
+                    Console.WriteLine("Signature: " + method.Signature);
                     Console.WriteLine("Method: " + method.Name + "\nMethod Address: " + method.AddressHex +
                                       Environment.NewLine);
                 }
@@ -168,13 +174,13 @@ class Program
         }
 
         Console.WriteLine("Create project for searched methods? (y/n)");
-        string createProject = Console.ReadLine();
+        string createProject = Console.ReadLine() ?? "n";
         if (createProject.ToLower() == "y")
         {
             Console.WriteLine("Enter project name:");
-            string projectName = Console.ReadLine();
+            string projectName = Console.ReadLine() ?? "UNDEFINEDNAME";
             Console.WriteLine("Enter project path:");
-            string projectPath = Console.ReadLine();
+            string projectPath = Console.ReadLine() ?? "C:/GlummyToolSuiteProjects";
 
             Il2CPPScripts.ScriptMethodExtensions.CreateCppHookFromMethods(methods.Values.ToArray(),
                 projectPath + "\\" + projectName);

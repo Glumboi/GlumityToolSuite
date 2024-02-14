@@ -8,6 +8,7 @@ struct OffsetRequest
 {
     std::string searchName;
     std::string value;
+    std::string signature;
 };
 
 struct AddressGetterRequest

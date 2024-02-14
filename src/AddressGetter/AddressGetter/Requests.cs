@@ -8,6 +8,7 @@ public class Requests
     {
         [JsonPropertyName("searchName")] public string SearchName { get; set; }
         [JsonPropertyName("value")] public string Value { get; set; }
+        [JsonPropertyName("signature")] public string Signature { get; set; }
     }
 
     public class CallerRequests
