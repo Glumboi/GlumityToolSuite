@@ -31,7 +31,6 @@ public class Il2CPPScripts
 
         public static string Demangle(string str)
         {
-            // Simple demangling for the provided examples
             str = Regex.Replace(str, @"^<.*>\$\$.*_", "");
             str = Regex.Replace(str, @"\$\$", "_");
             str = Regex.Replace(str, @"__", "_");
