@@ -107,12 +107,10 @@ void ModLoader::DumpIL2CPPBinary()
         //Get last 5 chars of the path
         std::string path = entry.path().string();
         std::string last5 = path.substr(path.length() - 5, 5);
-        TimeStampDebug("Currently checking: " + path);
-        TimeStampDebug("Checking last 5: " + last5);
-
         if (last5 == "_Data")
         {
             appDataPath = path;
+            TimeStampDebug("Found Unity game data at: " + path + "\nContinuing in unity IL2CPP mode!");
             TimeStampDebug("Above path is a game data folder, continuing...");
             break;
         }
