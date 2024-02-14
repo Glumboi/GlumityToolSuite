@@ -117,13 +117,16 @@ public class Il2CPPScripts
 
             List<Requests.OffSetRequest> offsetRequests = new();
             List<string> hooks = new();
+            List<string> hookCreations = new();
+
             bool createAutoHooks;
             Console.WriteLine(
                 "Do you want to auto generate hooks for the functions (y/n)?\nThis can be buggy and may need manual editing!");
             string autoGenYesNo = Console.ReadLine() ?? "n";
             createAutoHooks = autoGenYesNo.ToLower() == "y";
-            foreach (var method in scriptMethods)
+            for (var index = 0; index < scriptMethods.Length; index++)
             {
+                var method = scriptMethods[index];
                 // Continue with next iteration if method contains some mangled stuff, idk how safe this is, but it works...
                 // for now
                 if (method.DemangledName.Contains('<')) continue;
@@ -169,6 +172,14 @@ public class Il2CPPScripts
     return {method.DemangledName}_o({namesOnly});
 }}"));
 
+                hookCreations.Add(new string($@"
+    uintptr_t {method.DemangledName}Offset = std::stoull(functionOffsets[{index}].value, nullptr, 16);
+    MH_CreateHook(
+        reinterpret_cast<LPVOID*>(gameAsm + {method.DemangledName}Offset),
+        &{method.DemangledName}_hook,
+        (LPVOID*)&{method.DemangledName}_o);
+"));
+
                 offsetRequests.Add(new Requests.OffSetRequest
                 {
                     Value = method.AddressHex,
@@ -185,12 +196,15 @@ public class Il2CPPScripts
 
             File.WriteAllText(callerRequestsJsonFile, JsonSerializer.Serialize(callerRequests));
 
-            // Find the position of the first #define
-            int defineIndex = hooksHeaderContent.IndexOf("*/", StringComparison.Ordinal) + 3;
-
             // Insert hooks after the first #define
             if (createAutoHooks)
+            {
+                int defineIndex = hooksHeaderContent.IndexOf("*/", StringComparison.Ordinal) + 3;
                 hooksHeaderContent = hooksHeaderContent.Insert(defineIndex, string.Join("\n", hooks));
+
+                int instantiationIndex = hooksHeaderContent.LastIndexOf("*/", StringComparison.Ordinal) + 3;
+                hooksHeaderContent = hooksHeaderContent.Insert(instantiationIndex, string.Join("\n", hookCreations));
+            }
 
             // Write the modified content back to the file
             File.WriteAllText(hooksHeader, hooksHeaderContent);
