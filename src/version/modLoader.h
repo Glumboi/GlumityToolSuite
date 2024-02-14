@@ -36,7 +36,6 @@ public:
 
 private:
     std::string workingDirectory;
-
     std::string pluginsPath;
     std::string appDataPath;
     std::string gameAsmPath;

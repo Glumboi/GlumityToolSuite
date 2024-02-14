@@ -1,6 +1,7 @@
 #pragma once
 
 #include "exports.h"
+
 #include "windows.h"
 #include "modLoader.h"
 #include "debugUtils.h"
@@ -17,7 +18,6 @@ void Init()
 
     //Clear log file
     std::filesystem::remove(LOGFILE);
-    
     TimeStampDebug("Initializing ModLoader instance...");
     modLoaderInstance = new ModLoader();
 }

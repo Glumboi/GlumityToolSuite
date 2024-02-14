@@ -15,21 +15,7 @@ void ModLoader::Init()
     workingDirectory = std::string(buffer);
     TimeStampDebug("Working Directory: " + workingDirectory);
     LoadConfig("./GlummyLoader.cfg");
-
-    //Load base address of GameAssembly.dll
-    uintptr_t gameAssembly = reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll"));
-
-    if (gameAssembly != NULL)
-    {
-        TimeStampDebug("GameAssembly.dll base address: " + std::to_string(gameAssembly));
-        DumpIL2CPPBinary();
-    }
-    else // Notify user that we are in "universal" mode,
-    //this loader can be used on any process actually, no need for specific modes or tweaks
-    {
-        TimeStampDebug("Could not load GameAssembly.dll, universal mode initialized!");
-        LoadAllPlugins();
-    }
+    DumpIL2CPPBinary();
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)KeyboardHandler::KeyBoardLoop, this, 0, 0);
 }
 
@@ -65,7 +51,7 @@ void ModLoader::LoadPlugin(const std::string& path)
     }
     else
     {
-        this->loadedPlugins.push_back(hModule);
+        loadedPlugins.push_back(hModule);
         PutDebug("Loaded library: " + path);
 
         // Retrieve and call the entry point function if needed (idk if this will ever be used for something more specific
@@ -80,6 +66,13 @@ void ModLoader::LoadPlugin(const std::string& path)
 
 void ModLoader::LoadAllPlugins()
 {
+    //Create a folder called plugins in the working directory if it doesnt exist
+    if (!std::filesystem::exists(pluginsPath))
+    {
+        TimeStampDebug("Creating Plugins Directory...");
+        std::filesystem::create_directory(pluginsPath);
+    }
+
     for (const auto& entry : std::filesystem::directory_iterator(pluginsPath))
     {
         std::filesystem::path extension = entry.path().extension();
@@ -127,11 +120,10 @@ void ModLoader::DumpIL2CPPBinary()
 
     if (appDataPath.empty())
     {
-        TimeStampDebug("Cannot find a game data folder, are you running a unity game?");
+        TimeStampDebug("Running in universal ASI loader mode!");
     }
 
     TimeStampDebug("Game path: " + workingDirectory);
-    TimeStampDebug("Data path: " + appDataPath);
 
     gameAsmPath = workingDirectory + "\\GameAssembly.dll";
     gameMetadataPath = appDataPath + "\\il2cpp_data\\Metadata\\global-metadata.dat";
@@ -141,44 +133,48 @@ void ModLoader::DumpIL2CPPBinary()
     dumpOutPath = workingDirectory + "\\DumpedIL2CPP";
     command = " " + gameAsmPath + " " + gameMetadataPath + " " + dumpOutPath;
 
-    TimeStampDebug("Dumper path: " + dumperPath);
-    TimeStampDebug("AddressGetter path: " + addressGetterPath);
-    TimeStampDebug("Dumped IL2CPP path: " + dumpOutPath);
-    TimeStampDebug("Plugins path: " + pluginsPath);
+    TimeStampDebug("Assumed Dumper path: " + dumperPath);
+    TimeStampDebug("Assumed AddressGetter path: " + addressGetterPath);
+    TimeStampDebug("Assumed Dumped IL2CPP path: " + dumpOutPath);
+    TimeStampDebug("Assumed Plugins path: " + pluginsPath);
 
-    //Create the dumper folder if it doesn't exist
-    if (!std::filesystem::exists(dumpOutPath))
+    if (!appDataPath.empty()) // we are in a unity IL2CPP game, proceed with dumping
     {
-        std::filesystem::create_directory(dumpOutPath);
+        //Create the dumper folder if it doesn't exist
+        if (!std::filesystem::exists(dumpOutPath))
+        {
+            std::filesystem::create_directory(dumpOutPath);
+        }
+
+        //Start a process to dump the game assembly
+        TimeStampDebug("Dumping game assembly...");
+
+        PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
+        STARTUPINFO StartupInfo; //This is an [in] parameter
+        ZeroMemory(&StartupInfo, sizeof(StartupInfo));
+        StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
+
+
+        TimeStampDebug("Starting dumping process with args: " + command);
+
+        if (CreateProcess(dumperPath.c_str(), const_cast<LPSTR>(command.c_str()),
+                          NULL,NULL,FALSE, 0,NULL,
+                          NULL, &StartupInfo, &ProcessInfo))
+        {
+            WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+            CloseHandle(ProcessInfo.hThread);
+            CloseHandle(ProcessInfo.hProcess);
+
+            TimeStampDebug("Dumped game assembly!");
+        }
+        else
+        {
+            TimeStampDebug("Failed to dump game assembly!");
+        }
+
+        SatisfyAllPluginRequests();
     }
 
-    //Start a process to dump the game assembly
-    TimeStampDebug("Dumping game assembly...");
-
-    PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
-    STARTUPINFO StartupInfo; //This is an [in] parameter
-    ZeroMemory(&StartupInfo, sizeof(StartupInfo));
-    StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
-
-
-    TimeStampDebug("Starting dumping process with args: " + command);
-
-    if (CreateProcess(dumperPath.c_str(), const_cast<LPSTR>(command.c_str()),
-                      NULL,NULL,FALSE, 0,NULL,
-                      NULL, &StartupInfo, &ProcessInfo))
-    {
-        WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
-        CloseHandle(ProcessInfo.hThread);
-        CloseHandle(ProcessInfo.hProcess);
-
-        TimeStampDebug("Dumped game assembly!");
-    }
-    else
-    {
-        TimeStampDebug("Failed to dump game assembly!");
-    }
-
-    SatisfyAllPluginRequests();
     LoadAllPlugins();
 }
 
