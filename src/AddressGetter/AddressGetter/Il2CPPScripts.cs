@@ -163,13 +163,12 @@ public class Il2CPPScripts
                 }
 
                 hooks.Add(new string($@"
-{returnType}(__fastcall* {method.DemangledName}_o)({signatureTypesWithoutNames});
+{returnType}(__fastcall* {method.DemangledName}_o)({signatureTypesWithoutNames.Remove(signatureTypesWithoutNames.LastIndexOf(','))});
 
 {returnType} __stdcall {method.DemangledName}_hook({signatureTypes})
 {{
     return {method.DemangledName}_o({namesOnly});
-}}
-"));
+}}"));
 
                 offsetRequests.Add(new Requests.OffSetRequest
                 {
@@ -188,7 +187,7 @@ public class Il2CPPScripts
             File.WriteAllText(callerRequestsJsonFile, JsonSerializer.Serialize(callerRequests));
 
             // Find the position of the first #define
-            int defineIndex = hooksHeaderContent.LastIndexOf("#define", StringComparison.Ordinal) + 2;
+            int defineIndex = hooksHeaderContent.IndexOf("*/", StringComparison.Ordinal) + 3;
 
             // Insert hooks after the first #define
             if (createAutoHooks)

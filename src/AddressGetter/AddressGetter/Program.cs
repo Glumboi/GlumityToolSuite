@@ -96,7 +96,7 @@ class Program
                     }
 
                     DebugLineWithName(
-                        $"Found one request of {nameAndSignature}\nWith address: {method.AddressHex}\nIn: {scriptsJson}");
+                        $"Found one request of {method.Signature}\nWith address: {method.AddressHex}\nIn: {scriptsJson}");
                 }
             }
         }

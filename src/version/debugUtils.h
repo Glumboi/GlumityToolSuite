@@ -37,4 +37,5 @@ inline void InitConsole()
     FILE* f;
     freopen_s(&f, "CONOUT$", "w", stdout);
     PutDebug("Console initialized");
+    SetConsoleTitle("GlummyLoader");
 }

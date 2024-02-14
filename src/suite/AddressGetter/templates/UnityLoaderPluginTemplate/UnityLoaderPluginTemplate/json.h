@@ -37,6 +37,7 @@ AddressGetterRequest readJsonFromFile(const std::string& filename)
         OffsetRequest req;
         req.searchName = offsetReq["searchName"];
         req.value = offsetReq["value"];
+        req.signature = offsetReq["signature"];
         example.offsetRequests.push_back(req);
     }
 
