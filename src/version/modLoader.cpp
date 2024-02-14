@@ -15,7 +15,21 @@ void ModLoader::Init()
     workingDirectory = std::string(buffer);
     TimeStampDebug("Working Directory: " + workingDirectory);
     LoadConfig("./GlummyLoader.cfg");
-    DumpIL2CPPBinary();
+
+    //Load base address of GameAssembly.dll
+    uintptr_t gameAssembly = reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll"));
+
+    if (gameAssembly != NULL)
+    {
+        TimeStampDebug("GameAssembly.dll base address: " + std::to_string(gameAssembly));
+        DumpIL2CPPBinary();
+    }
+    else // Notify user that we are in "universal" mode,
+    //this loader can be used on any process actually, no need for specific modes or tweaks
+    {
+        TimeStampDebug("Could not load GameAssembly.dll, universal mode initialized!");
+        LoadAllPlugins();
+    }
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)KeyboardHandler::KeyBoardLoop, this, 0, 0);
 }
 

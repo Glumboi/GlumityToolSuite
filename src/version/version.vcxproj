@@ -171,7 +171,6 @@
     <ClInclude Include="debugUtils.h" />
     <ClInclude Include="exports.h" />
     <ClInclude Include="modLoader.h" />
-    <ClInclude Include="offsets.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

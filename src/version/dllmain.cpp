@@ -1,9 +1,7 @@
 #pragma once
 
 #include "exports.h"
-
 #include "windows.h"
-#include "offsets.h"
 #include "modLoader.h"
 #include "debugUtils.h"
 
@@ -19,20 +17,7 @@ void Init()
 
     //Clear log file
     std::filesystem::remove(LOGFILE);
-
-    //Load base address of GameAssembly.dll
-    gameAssembly = reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll"));
-
-    if (gameAssembly != NULL)
-    {
-        TimeStampDebug("GameAssembly.dll base address: " + std::to_string(gameAssembly));
-    }
-    else // Notify user that we are in "universal" mode,
-    //this loader can be used on any process actually, no need for specific modes or tweaks
-    {
-        TimeStampDebug("Could not load GameAssembly.dll, universal mode is risky!");
-    }
-
+    
     TimeStampDebug("Initializing ModLoader instance...");
     modLoaderInstance = new ModLoader();
 }

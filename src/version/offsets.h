@@ -1,1 +1,0 @@
-﻿uintptr_t gameAssembly;

@@ -1,5 +1,7 @@
 #pragma once
 #include <sstream>
+#include <iomanip>  // For std::setw
+#include <iostream>
 #define LOGFILE "GlummyLoaderLog.txt"
 
 inline void DebugToFile(std::string szInput)
