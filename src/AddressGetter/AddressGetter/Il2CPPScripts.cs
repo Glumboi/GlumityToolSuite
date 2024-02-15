@@ -170,7 +170,7 @@ public class Il2CPPScripts
                 string returnVariable = returnType == "void"
                     ? ""
                     : $"{returnType} returnResult = {method.DemangledName}_o({namesOnly} method);";
-                string returnStatement = returnType == "void" ? $"{method.DemangledName}_o({namesOnly} method);" : "returnResult;";
+                string returnStatement = returnType == "void" ? $"{method.DemangledName}_o({namesOnly} method)" : "returnResult";
                 hooks.Add(new string($@"
 {returnType}(__fastcall* {method.DemangledName}_o)({signatureTypesWithoutNames.Remove(signatureTypesWithoutNames.LastIndexOf(','))});
 
