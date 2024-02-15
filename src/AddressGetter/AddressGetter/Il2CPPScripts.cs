@@ -164,14 +164,20 @@ public class Il2CPPScripts
                     signatureTypesWithoutNames += final;
                 }
 
-                string hookCalledNotification = $"\"{method.DemangledName} called\"";
+                string hookCalledNotification = returnType == "void"
+                    ? $"\"{method.DemangledName} called\""
+                    : $"\"{method.DemangledName} called with result: \" << returnResult";
+                string returnVariable = returnType == "void"
+                    ? ""
+                    : $"{returnType} returnResult = {method.DemangledName}_o({namesOnly} method);";
                 hooks.Add(new string($@"
 {returnType}(__fastcall* {method.DemangledName}_o)({signatureTypesWithoutNames.Remove(signatureTypesWithoutNames.LastIndexOf(','))});
 
 {returnType} __stdcall {method.DemangledName}_hook({signatureTypes})
 {{
+    {returnVariable}
     QUICKDEBUG({hookCalledNotification});
-    return {method.DemangledName}_o({namesOnly} method);
+    return returnResult;
 }}"));
 
                 hookCreations.Add(new string($@"
