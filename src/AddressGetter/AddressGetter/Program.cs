@@ -151,7 +151,7 @@ class Program
         {
             foreach (var mn in searchFor.Split(','))
             {
-                if (method.Name.ToLower().Contains(mn.ToLower()))
+                if (method.DemangledName.ToLower().Contains(mn.ToLower()))
                 {
                     //Skip if already added
                     if (methods.ContainsKey(method.Name + "=" + "0x" + method.AddressHex)) continue;
