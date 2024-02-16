@@ -1,4 +1,4 @@
-<img src="" align="right" height="64px" />
+
 
 # GlummysPCBS2ModdingToolsuite
 A small modding tool suite built for IL2CPP Unity games
