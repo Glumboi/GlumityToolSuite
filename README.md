@@ -27,8 +27,8 @@ A small modding tool suite built for IL2CPP Unity games
 * VCPKG
 
 * The following VCPKG packages:<br/>
-Minhook ``` vcpkg install minhook_x64-windows-static```<br/>
-Nlohmann-json  ``` vcpkg install nlohmann-json_x64-windows-static ``` 
+Minhook ```vcpkg install minhook_x64-windows-static```<br/>
+Nlohmann-json  ```vcpkg install nlohmann-json_x64-windows-static``` 
 
 # Create your first plugin template
 In this section I will go over on how we can create a plugin using the tool suite.<br/>
