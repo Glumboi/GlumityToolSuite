@@ -26,7 +26,7 @@ A small modding tool suite built for IL2CPP Unity games
 
 * VCPKG
 
-* The following VCPKG packages: minhook_x64-windows-static, nlohmann-json_x64-windows-static
+* The following VCPKG packages: Minhook (vcpkg install minhook_x64-windows-static), Nlohmann-json (vcpkg install nlohmann-json_x64-windows-static)
 
 # Create your first plugin template
 In this section I will go over on how we can create a plugin using the tool suite.<br/>
@@ -37,8 +37,10 @@ After you have downloaded the tool suite, you want to extract it into the game's
 That's it, you are done with the initial setup!<br/>
 Now we get to the fun part...<br/>
 Locate the "AddressGetter" folder inside your game directory, launch the "**AddressGetter.exe**" and follow these steps:<br/>
-* Find the dumped script.json (you can find it in the "**DumpedIL2CPP**" folder which is located in the game directory as well), copy it's path and enter it in the prompt of the AddressGetter
+* Launch the game with the mod loader installed, or dump the game assembly on your own
 
+* Find the dumped script.json (you can find it in the "**DumpedIL2CPP**" folder which is located in the game directory as well if you chose to launch the game instead of manually dumping), copy it's path and enter it in the prompt of the AddressGetter
+  
 * Now you need to know which functions you want to hook/modify, if you don't know what you want to hook to, take a look into the dummy .dll's the dumper has generated for you (they can be found in **DumpedIL2CPP\DummyDll**)
 
 * The next prompt is kind of obsolete and just creates a small dump of the offsets for the specified functions, simply skip if you don't need a quick dump of the offsets
