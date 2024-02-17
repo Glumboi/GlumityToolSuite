@@ -183,6 +183,7 @@ public class Il2CPPScripts
 {returnType} __stdcall {method.DemangledName}_hook({signatureTypes})
 {{
     {returnVariable}
+    Unity::CComponent* caller = (Unity::CComponent*)__this; //Gets the instance of the current unity gameobject component
     QUICKDEBUG({hookCalledNotification});
     return {returnStatement};
 }}"));
