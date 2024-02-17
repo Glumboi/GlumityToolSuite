@@ -68,7 +68,7 @@ Upon opening, you first want to set the build target to Release-X64.<br/>
 After you have done that, you want to go into the "**hooks.h**" header file and look at it for a moment.<br/>
 
 You will quickly notice how you got a lot of errors, well they are there because the project doesn't know of the types from the game, in my case I have unknown types such as: "PCSaleInfo_o", "Job_o", "MethodInfo".<br/>
-Don't worry though, this is expected and can be easily fixed, for all types that aren't recognized, you simply want them to replace with "**DWORD**", to quickly replace types instead of going 1 by 1, you can press ctrl + H to open the "**Replace**" dialog in your IDE (please note that this hotkey can be different depending on your IDE config)
+Don't worry though, this is expected and can be easily fixed, for all types that aren't recognized, you simply want them to replace with "**DWORD**" or "**unsinged long**", to quickly replace types instead of going 1 by 1, you can press ctrl + H to open the "**Replace**" dialog in your IDE (please note that this hotkey can be different depending on your IDE config)
 
 After you have done all that, you want to add an existing item to the project, what you want to add then is the following: A file called yourProjectName.offsetRequests.json, this file will act as a sort of API request to our mod loader which will populate the json file with data needed to hook the functions, it should already have default values which are from your last game session before creating the template. 
 
