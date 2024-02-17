@@ -34,6 +34,10 @@ public class Il2CPPScripts
             str = Regex.Replace(str, @"^<.*>\$\$.*_", "");
             str = Regex.Replace(str, @"\$\$", "_");
             str = Regex.Replace(str, @"__", "_");
+
+            //Replace all remaining dots with underscores
+            str = Regex.Replace(str, @"\.", "_");
+
             return str;
         }
     }
@@ -170,7 +174,9 @@ public class Il2CPPScripts
                 string returnVariable = returnType == "void"
                     ? ""
                     : $"{returnType} returnResult = {method.DemangledName}_o({namesOnly} method);";
-                string returnStatement = returnType == "void" ? $"{method.DemangledName}_o({namesOnly} method)" : "returnResult";
+                string returnStatement = returnType == "void"
+                    ? $"{method.DemangledName}_o({namesOnly} method)"
+                    : "returnResult";
                 hooks.Add(new string($@"
 {returnType}(__fastcall* {method.DemangledName}_o)({signatureTypesWithoutNames.Remove(signatureTypesWithoutNames.LastIndexOf(','))});
 
