@@ -108,7 +108,7 @@ int32_t __stdcall PCSaleInfo_GetCashForOverclock_hook(DWORD* __this, bool Overcl
 And that's it with the short tutorial on how to create a plugin with custom behavior!
 
 # What is an offsetRequests.json file?
-An offsetRequests.json file is essentially like a an API request you could say.<br/>
+An offsetRequests.json file is essentially like an API request you could say.<br/>
 Let me explain it a little further with this example (from a plugin I made which is available [here](https://github.com/Glumboi/PCBS2-InfiniteMoney/tree/main):<b/>
 ```json
 {
