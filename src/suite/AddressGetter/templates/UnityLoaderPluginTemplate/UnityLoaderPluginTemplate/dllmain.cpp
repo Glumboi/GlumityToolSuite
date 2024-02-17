@@ -1,14 +1,31 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
-#include "pch.h"
-#include <MinHook.h>
-#include "debugUtils.h"
+#include "includes.h"
+
+int InitIL2CPPResolver()
+{
+    //init IL2CPP
+    if (IL2CPP::Initialize(true) && IL2CPP::Thread::Attach(IL2CPP::Domain::Get()))
+    {
+        return 1;
+    }
+
+    return 0;
+}
 
 VOID Init()
 {
     InitConsole();
     gameAsm = reinterpret_cast<uintptr_t>(GetModuleHandle("GameAssembly.dll"));
     MH_Initialize();
-    CreateAndLoadHooks();
+
+    if (InitIL2CPPResolver())
+    {
+        TimeStampDebug("Initialized Il2CPP, loading hooks");
+        CreateAndLoadHooks();
+        return;
+    }
+
+    TimeStampDebug("Failed to initialize IL2CPP, aborting hook initialization...");
 }
 
 VOID Main()
