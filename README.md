@@ -107,6 +107,71 @@ int32_t __stdcall PCSaleInfo_GetCashForOverclock_hook(DWORD* __this, bool Overcl
 
 And that's it with the short tutorial on how to create a plugin with custom behavior!
 
+# What is an offsetRequests.json file?
+An offsetRequests.json file is essentially like a an API request you could say.<br/>
+Let me explain it a little further with this example (from a plugin I made which is available [here](https://github.com/Glumboi/PCBS2-InfiniteMoney/tree/main):<b/>
+```json
+{
+  "caller": "PCBS2-InfiniteMoney",
+  "offsetRequests": [
+    {
+      "searchName": "CareerStatus_GetCash",
+      "value": "0xFFFFFF",
+      "signature": "int32_t CareerStatus__GetCash (CareerStatus_o* __this, const MethodInfo* method);"
+    }
+  ]
+}
+```
+
+So, as with all json files, we have one root node, under that we have 2 fields, 1 being our "**caller**" and the other being an array of objects which basically represent the targets the plugin wants to hook to. Now let's get into a little more detail on what these fields do:<b/>
+
+* "**caller**" This essentially is your plugin's name and is only relevant for debugging purposes really, make sure that it fits your plugin's name though!
+
+* "**offsetRequests**" As said before, this is a collection of requests we "send" towards the mod loader, the mod loader will start an instance of the AddressGetter in the so called "internal" mode with the json file in it's arguments, the AddressGetter will then fill out each request with the proper data to do a successful hook 
+
+* "**Request field: searchName**" This is essentially the class and name of a function separated by an underscore, this was used to find functions before, now it's primary used as like a "double check" to make sure the AddressGetter returns the exact thing we asked for, make sure that it is exact to whats in the signature but with only a single underscore instead of 2
+
+* "**Request field: value**" This field will hold the address/offset, should be pretty self explanatory
+
+* "**Request field: signature**" This field holds the function's return type, the class + name and arguments, it is used in combination with the "signature" field to get a unique string to search for in the script.json file which holds every dumped function of a game and is used to "double" check the request
+
+# What is and how do I use the AddressGetter?
+The AddressGetter is nothing short of just a simple text parser, it reads through a file in the given arguments and returns re formatted data, there 2 primary ways to use this, 1 of which has a couple different outcomes for the output and the other is purely for the mod loader to fulfill requests.<b/>
+
+So how does it work?
+
+### Well, let me explain the "standalone" way first.
+
+Upon launching the AddressGetter.exe (with no arguments) you will see a CLI asking you for a script.json file, as I stated somewhere above already, you put the game's dumped script.json file path from the IL2CPP dumper in there.
+
+Now it asks for functions to look out for, here you enter any function you would like to hook to, if you want to hook to multiple, separate them with a comma (like so: functionA,functionB,functionC), if you want to hook to multiple overloaded functions, only 1 name is needed, the AddressGetter will list all functions it finds with that name.
+
+Now it wants a path from you, you can simply skip this though, this specific thing was meant as a fast debugging function and didn't get removed from it yet
+
+After printing all the functions it found, you will be asked if you want to create a project for the found functions, if you wish to do so, simply enter 'y'. You can also manually create your own project and use a json file you setup yourself using the printed data, for that just save the printed functions somewhere and enter 'n'.
+
+If you chose 'y', then now it's time to choose a name, as stated above already, you can enter anything, as long as it doesn't hold any special characters, except for: '-', '_', '.'.<br/>
+After entering the name, it also wants a path from you, this is a path to a directory it will create the project in, projects will be stored in a folder which has the name of your project inside the now specified directory. 
+
+### Now it's time to explain the "internal" way.
+
+This is mostly relevant for the mod loader, but I will go over it regardless.
+
+The AddressGetter can be ran in "internal" mode using the following arguments:
+
+```AddressGetter.exe internal <your offsetRequests.json file> <path to the script.json file> | useDefault <stealthPrint: bool>```
+
+Ok, but what do they mean?
+
+* "**Argument: internal**" The first one is pretty obvious and explains itself, this will tell the AddressGetter to run in the "internal" mode
+
+* "**Argument: requestFile**" The second one consists of the offsetRequests.json file you would like to populate
+
+* "**Argument: scriptJson**" The third contains the path to the dumped script.json file to use for the requests, the part after the ' | ' and the '|' itself should not be included, '|' means "or" which basically means that you can manually specify this path or let the AddressGetter use the default location of the dumped data, the default location for the dumped data is: ```.\DumpedIL2CPP\script.json```
+
+* "**Argument: stealthPrint**" This argument allows for a more minimalistic debugging, "true" is what the mod loader uses
+
+
 # "Design guidelines" for plugins
 
 * If printing to the console, make sure to use the QUICKDEBUG macro or the functions from the **debugUtils.h** header file, or simply make sure to put your message in this format: [yourProjectName]: YourMessage <br/> 
