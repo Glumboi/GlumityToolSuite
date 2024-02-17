@@ -110,7 +110,7 @@ void ModLoader::DumpIL2CPPBinary()
         if (last5 == "_Data")
         {
             appDataPath = path;
-            TimeStampDebug("Found Unity game data at: " + path );
+            TimeStampDebug("Found Unity game data at: " + path);
             TimeStampDebug("Continuing in unity IL2CPP mode!");
             break;
         }
@@ -129,7 +129,8 @@ void ModLoader::DumpIL2CPPBinary()
     dumperPath = workingDirectory + "\\dumper\\Il2CppDumper.exe";
     addressGetterPath = workingDirectory + "\\AddressGetter\\AddressGetter.exe";
     dumpOutPath = workingDirectory + "\\DumpedIL2CPP";
-    command = " " + gameAsmPath + " " + gameMetadataPath + " " + dumpOutPath;
+    command = " " + std::string("\"" + gameAsmPath + "\"") + " " + std::string("\"" + gameMetadataPath + "\"") + " " +
+        std::string("\"" + dumpOutPath + "\"");
 
     TimeStampDebug("Assumed Dumper path: " + dumperPath);
     TimeStampDebug("Assumed AddressGetter path: " + addressGetterPath);
@@ -192,7 +193,7 @@ void ModLoader::SatisfyAllPluginRequests()
         if (extension == ".json")
         {
             // Start a new process to satisfy the plugin request
-            std::string jsonFile = entry.path().generic_string();
+            std::string jsonFile = std::string("\"" + entry.path().generic_string() + "\"");
             TimeStampDebug("Satisfying plugin request: " + jsonFile);
 
             PROCESS_INFORMATION ProcessInfo; // This is what we get as an [out] parameter

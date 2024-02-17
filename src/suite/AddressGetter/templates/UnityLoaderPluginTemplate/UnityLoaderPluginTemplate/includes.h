@@ -5,8 +5,7 @@
 #include <MinHook.h>
 #include <sstream>
 
-#include "./IL2CppResolver/Includes.hpp"
-#include "./IL2CppResolver/Main.hpp"
+#include "./IL2CppResolver/IL2CPP_Resolver.hpp"
 
 #include "offsets.h"
 #include "hooks.h"

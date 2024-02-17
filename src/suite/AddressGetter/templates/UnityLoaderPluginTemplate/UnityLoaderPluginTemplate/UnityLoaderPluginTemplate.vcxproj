@@ -149,17 +149,8 @@
     <ClInclude Include="debugUtils.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="hooks.h" />
-    <ClInclude Include="IL2CppResolver\Cache.hpp" />
     <ClInclude Include="IL2CppResolver\Data.hpp" />
     <ClInclude Include="IL2CppResolver\Defines.hpp" />
-    <ClInclude Include="IL2CppResolver\Functions\Callback.hpp" />
-    <ClInclude Include="IL2CppResolver\Functions\Class.hpp" />
-    <ClInclude Include="IL2CppResolver\Functions\Domain.hpp" />
-    <ClInclude Include="IL2CppResolver\Functions\ResolveCall.hpp" />
-    <ClInclude Include="IL2CppResolver\Functions\String.hpp" />
-    <ClInclude Include="IL2CppResolver\Functions\Thread.hpp" />
-    <ClInclude Include="IL2CppResolver\Includes.hpp" />
-    <ClInclude Include="IL2CppResolver\Main.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\API\Camera.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\API\Component.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\API\GameObject.hpp" />
@@ -167,19 +158,14 @@
     <ClInclude Include="IL2CppResolver\Unity\API\Object.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\API\Rigidbody.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\API\Transform.hpp" />
-    <ClInclude Include="IL2CppResolver\Unity\API\_TEMPLATE_API.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\Defines.hpp" />
-    <ClInclude Include="IL2CppResolver\Unity\Includes.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\Obfuscators.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\Structures\Engine.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\Structures\il2cpp.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\Structures\il2cppArray.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\Structures\il2cppDictionary.hpp" />
-    <ClInclude Include="IL2CppResolver\Unity\Structures\Includes.hpp" />
     <ClInclude Include="IL2CppResolver\Unity\Structures\System_String.hpp" />
     <ClInclude Include="IL2CppResolver\Utils\Helper.hpp" />
-    <ClInclude Include="IL2CppResolver\Utils\Joaat.hpp" />
-    <ClInclude Include="IL2CppResolver\Utils\VFunc.hpp" />
     <ClInclude Include="includes.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="offsets.h" />
@@ -188,23 +174,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="IL2CppResolver\Cache.cpp" />
-    <ClCompile Include="IL2CppResolver\Data.cpp" />
-    <ClCompile Include="IL2CppResolver\Functions\Callback.cpp" />
-    <ClCompile Include="IL2CppResolver\Functions\Class.cpp" />
-    <ClCompile Include="IL2CppResolver\Functions\String.cpp" />
-    <ClCompile Include="IL2CppResolver\Functions\Thread.cpp" />
-    <ClCompile Include="IL2CppResolver\Main.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\API\Camera.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\API\Component.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\API\GameObject.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\API\LayerMask.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\API\Object.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\API\Rigidbody.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\API\Transform.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\API\_TEMPLATE_API.cpp" />
-    <ClCompile Include="IL2CppResolver\Unity\Obfuscators.cpp" />
-    <ClCompile Include="IL2CppResolver\Utils\Helper.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

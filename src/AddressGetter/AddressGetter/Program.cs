@@ -66,8 +66,10 @@ class Program
 
     static void InternalMain(string[] args)
     {
-        string requestFile = args[1];
-        string scriptsJson = args[2] != "useDefault" ? args[2] : Path.GetFullPath(@".\DumpedIL2CPP\script.json");
+        string requestFile = args[1].Replace("\"", "");
+        string scriptsJson = args[2] != "useDefault"
+            ? args[2]
+            : Path.GetFullPath(@".\DumpedIL2CPP\script.json").Replace("\"", "");
         bool stealthPrint = bool.Parse(args[3]);
 
         Requests.CallerRequests callerRequests =
