@@ -1,6 +1,7 @@
 #pragma once
-#include <iostream>
-#include "offsets.h"
+
+//Can be used to alter unity behavior
+
 #define MODNAME "[ModName]"
 #define JSONFILE "\\Plugins\\ModName.offsetRequests.json"
 #define QUICKDEBUG(msg) std::cout << MODNAME << ": " <<  msg << "\n"
