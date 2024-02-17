@@ -39,7 +39,7 @@ After you have downloaded the tool suite, you want to extract it into the game's
 That's it, you are done with the initial setup!<br/>
 Now we get to the fun part...<br/>
 Locate the "AddressGetter" folder inside your game directory, launch the "**AddressGetter.exe**" and follow these steps:<br/>
-* Launch the game with the mod loader installed, or dump the game assembly on your own
+* Launch the game with the mod loader installed (skip if already done), or dump the game assembly on your own
 
 * Find the dumped script.json (you can find it in the "**DumpedIL2CPP**" folder which is located in the game directory as well if you chose to launch the game instead of manually dumping), copy it's path and enter it in the prompt of the AddressGetter
   
