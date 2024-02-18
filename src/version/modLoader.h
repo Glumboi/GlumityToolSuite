@@ -39,13 +39,19 @@ private:
     std::string pluginsPath;
     std::string appDataPath;
     std::string gameAsmPath;
+    std::string assemblyCreationTimeFile;
     std::string gameMetadataPath;
     std::string dumperPath;
     std::string addressGetterPath;
     std::string command;
     std::string dumpOutPath;
+    std::string assemblyCreationTime;
+    std::string storedAssemblyCreationTime;
     std::vector<HMODULE> loadedPlugins;
     void LoadPlugin(const std::string& path);
+    void UpdateCreationTimeFile();
+    bool IsGameANewerVersion();
+    void LoadAssemblyCreationTime();
 };
 
 struct KeyboardHandler

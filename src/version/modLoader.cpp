@@ -64,6 +64,40 @@ void ModLoader::LoadPlugin(const std::string& path)
     }
 }
 
+void ModLoader::UpdateCreationTimeFile()
+{
+    std::ofstream creationTimeFile(assemblyCreationTimeFile);
+    creationTimeFile << "assemblyCreationTime=" + assemblyCreationTime;
+    creationTimeFile.close();
+}
+
+bool ModLoader::IsGameANewerVersion()
+{
+    std::ifstream creationFileIn(assemblyCreationTimeFile);
+    if (creationFileIn.good())
+    {
+        std::string sLine;
+        getline(creationFileIn, sLine);
+        size_t lastEq = sLine.find('=') + 1;
+        storedAssemblyCreationTime = sLine.substr(lastEq, sLine.length() - lastEq);
+        TimeStampDebug(
+            "Stored creation time: " + storedAssemblyCreationTime + " | GameAssembly creation time: " +
+            assemblyCreationTime);
+        return storedAssemblyCreationTime != assemblyCreationTime;
+    }
+    creationFileIn.close();
+    return true;
+}
+
+void ModLoader::LoadAssemblyCreationTime()
+{
+    WIN32_FILE_ATTRIBUTE_DATA fInfo;
+    GetFileAttributesEx(gameAsmPath.c_str(), GetFileExInfoStandard, &fInfo);
+
+    assemblyCreationTime = std::to_string(
+        fInfo.ftCreationTime.dwHighDateTime + fInfo.ftCreationTime.dwLowDateTime);
+}
+
 void ModLoader::LoadAllPlugins()
 {
     //Create a folder called plugins in the working directory if it doesnt exist
@@ -124,6 +158,7 @@ void ModLoader::DumpIL2CPPBinary()
     TimeStampDebug("Game path: " + workingDirectory);
 
     gameAsmPath = workingDirectory + "\\GameAssembly.dll";
+    assemblyCreationTimeFile = workingDirectory + "\\AssemblyCreationTime";
     gameMetadataPath = appDataPath + "\\il2cpp_data\\Metadata\\global-metadata.dat";
     pluginsPath = workingDirectory + "\\Plugins";
     dumperPath = workingDirectory + "\\dumper\\Il2CppDumper.exe";
@@ -145,32 +180,37 @@ void ModLoader::DumpIL2CPPBinary()
             std::filesystem::create_directory(dumpOutPath);
         }
 
-        //Start a process to dump the game assembly
-        TimeStampDebug("Dumping game assembly...");
+        LoadAssemblyCreationTime();
 
-        PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
-        STARTUPINFO StartupInfo; //This is an [in] parameter
-        ZeroMemory(&StartupInfo, sizeof(StartupInfo));
-        StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
-
-
-        TimeStampDebug("Starting dumping process with args: " + command);
-
-        if (CreateProcess(dumperPath.c_str(), const_cast<LPSTR>(command.c_str()),
-                          NULL,NULL,FALSE, 0,NULL,
-                          NULL, &StartupInfo, &ProcessInfo))
+        if (IsGameANewerVersion())
         {
+            //Start a process to dump the game assembly
+            TimeStampDebug("New game version detected, dumping game assembly...");
+
+            PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
+            STARTUPINFO StartupInfo; //This is an [in] parameter
+            ZeroMemory(&StartupInfo, sizeof(StartupInfo));
+            StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
+
+            TimeStampDebug("Starting dumping process with args: " + command);
+
+            bool success = CreateProcess(dumperPath.c_str(), const_cast<LPSTR>(command.c_str()),
+                                         NULL,NULL,FALSE, 0,NULL,
+                                         NULL, &StartupInfo, &ProcessInfo);
             WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
             CloseHandle(ProcessInfo.hThread);
             CloseHandle(ProcessInfo.hProcess);
 
-            TimeStampDebug("Dumped game assembly!");
-        }
-        else
-        {
-            TimeStampDebug("Failed to dump game assembly!");
+
+            if (success)
+                TimeStampDebug("Dumped game assembly!");
+            else
+                TimeStampDebug("Failed to dump game assembly!");
+
+            std::filesystem::remove(assemblyCreationTimeFile);
         }
 
+        UpdateCreationTimeFile();
         SatisfyAllPluginRequests();
     }
 
