@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="commonHooks.h" />
     <ClInclude Include="debugUtils.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="hooks.h" />

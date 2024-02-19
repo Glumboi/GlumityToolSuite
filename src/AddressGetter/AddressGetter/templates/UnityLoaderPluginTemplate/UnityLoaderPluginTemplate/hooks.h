@@ -6,14 +6,16 @@
 
 //Define your hooks here, or somewhere else and include them here
 //Example from my infinite money plugin:
-/*
-int32_t(__fastcall* CareerStatus__GetCash_o)(DWORD*, DWORD*);
+
+/*using CareerStatus__GetCash_t = int32_t(__fastcall*)(DWORD*, DWORD*);
+CareerStatus__GetCash_t CareerStatus__GetCash_o; 
 
 int32_t __stdcall CareerStatus__GetCash_hook(DWORD* __tis, DWORD* method)
 {
     return 1000000;
 }
 */
+
 
 inline void CreateAndLoadHooks()
 {
@@ -44,6 +46,10 @@ inline void CreateAndLoadHooks()
         (LPVOID*)&CareerStatus__GetCash_o);
      */
 
+
+    //Common hooks aka hooks to windows API and more will be created here
+    //CreateCommonHooks();
+    
     MH_STATUS status = MH_EnableHook(MH_ALL_HOOKS); //Get the hook status, 0 = ALl good
 
     QUICKDEBUG("Hooks loaded with status: " << status);
