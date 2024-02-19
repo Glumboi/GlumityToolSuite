@@ -1,4 +1,8 @@
 #pragma once
+#define MODNAME "[DirectXHookTest]"
+#define JSONFILE "\\Plugins\\DirectXHookTest.offsetRequests.json"
+#define QUICKDEBUG(msg) std::cout << MODNAME << ": " <<  msg << "\n"
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>

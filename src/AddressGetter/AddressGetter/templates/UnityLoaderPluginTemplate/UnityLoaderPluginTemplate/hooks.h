@@ -1,13 +1,10 @@
 #pragma once
 
-#define MODNAME "[ModName]"
-#define JSONFILE "\\Plugins\\ModName.offsetRequests.json"
-#define QUICKDEBUG(msg) std::cout << MODNAME << ": " <<  msg << "\n"
-
 //Define your hooks here, or somewhere else and include them here
 //Example from my infinite money plugin:
 
-/*using CareerStatus__GetCash_t = int32_t(__fastcall*)(DWORD*, DWORD*);
+/*
+using CareerStatus__GetCash_t = int32_t(__fastcall*)(DWORD*, DWORD*);
 CareerStatus__GetCash_t CareerStatus__GetCash_o; 
 
 int32_t __stdcall CareerStatus__GetCash_hook(DWORD* __tis, DWORD* method)

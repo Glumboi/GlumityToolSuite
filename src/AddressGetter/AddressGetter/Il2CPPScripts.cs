@@ -113,9 +113,11 @@ public class Il2CPPScripts
             string hooksHeader = location + $"\\{projectName}" + "\\hooks.h";
             string callerRequestsJsonFile = location + "\\" + projectName + "\\" + projectName + ".offsetRequests.json";
             string hooksHeaderContent = File.ReadAllText(hooksHeader);
-
-            //Chage MODNAME in hooks.h and create hooks
-            hooksHeaderContent = hooksHeaderContent.Replace("\"[ModName]\"", $"\"[{projectName}]\"").Replace(
+            
+            string includesHeader = location + $"\\{projectName}" + "\\includes.h";
+            string includesHeaderContent = File.ReadAllText(includesHeader);
+            
+            includesHeaderContent = includesHeaderContent.Replace("\"[ModName]\"", $"\"[{projectName}]\"").Replace(
                 "\"\\\\Plugins\\\\ModName.offsetRequests.json\"",
                 $"\"\\\\Plugins\\\\{projectName}.offsetRequests.json\"");
 
@@ -178,7 +180,9 @@ public class Il2CPPScripts
                     ? $"{method.DemangledName}_o({namesOnly} method)"
                     : "returnResult";
                 hooks.Add(new string($@"
-{returnType}(__fastcall* {method.DemangledName}_o)({signatureTypesWithoutNames.Remove(signatureTypesWithoutNames.LastIndexOf(','))});
+
+using {method.DemangledName}_t = {returnType}(__fastcall*)({signatureTypesWithoutNames.Remove(signatureTypesWithoutNames.LastIndexOf(','))});
+{method.DemangledName}_t {method.DemangledName}_o; 
 
 {returnType} __stdcall {method.DemangledName}_hook({signatureTypes})
 {{
