@@ -9,7 +9,10 @@ CareerStatus__GetCash_t CareerStatus__GetCash_o;
 
 int32_t __stdcall CareerStatus__GetCash_hook(DWORD* __tis, DWORD* method)
 {
-    return 1000000;
+    int32_t returnResult = 1000000;//CareerStatus_GetCash_o(__this, method);
+    Unity::CComponent* caller = (Unity::CComponent*)__this; //Gets the instance of the current unity gameobject component
+    QUICKDEBUG("CareerStatus_GetCash called with result: " << returnResult);
+    return returnResult;
 }
 */
 
