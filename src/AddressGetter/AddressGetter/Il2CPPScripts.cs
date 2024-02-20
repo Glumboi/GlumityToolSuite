@@ -181,9 +181,7 @@ public class Il2CPPScripts
                     : "returnResult";
                 hooks.Add(new string($@"
 
-using {method.DemangledName}_t = {returnType}(__fastcall*)({signatureTypesWithoutNames.Remove(signatureTypesWithoutNames.LastIndexOf(','))});
-{method.DemangledName}_t {method.DemangledName}_o; 
-
+{returnType}(__fastcall* {method.DemangledName}_o)({signatureTypesWithoutNames.Remove(signatureTypesWithoutNames.LastIndexOf(','))});
 {returnType} __stdcall {method.DemangledName}_hook({signatureTypes})
 {{
     {returnVariable}
