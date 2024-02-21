@@ -1,6 +1,9 @@
 
 
-# Glum(my)(Un)ityToolSuite 
+<img align="right" width="80" height="80" src="GlumityToolsuite.png">
+
+# Glum(my)(Un)ityToolSuite
+
 A small modding tool suite built for IL2CPP Unity games
 
 * Bare bones mod loader that supports loading certain "**plugins**"
