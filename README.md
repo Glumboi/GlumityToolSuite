@@ -35,7 +35,7 @@ Nlohmann-json  ```vcpkg install nlohmann-json:x64-windows-static ```
 
 # Create your first plugin template
 In this section I will go over on how we can create a plugin using the tool suite.<br/>
-First we need to make sure that we have all the requirements listed above, then you go ahead and download the latest tool suite [release](https://www.nexusmods.com/pcbuildingsimulator2/mods/55).
+First we need to make sure that we have all the requirements listed above, then you go ahead and download the latest tool suite [release](https://www.nexusmods.com/site/mods/795?tab=files).
 
 After you have downloaded the tool suite, you want to extract it into the game's main directory and simply launch the game. Wait for it to dump the assembly and exit right after.
 
