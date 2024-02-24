@@ -14,11 +14,8 @@ ModLoader* modLoaderInstance = nullptr;
 
 void Init()
 {
-    InitConsole();
-
     //Clear log file
     std::filesystem::remove(LOGFILE);
-    TimeStampDebug("Initializing ModLoader instance...");
     modLoaderInstance = new ModLoader();
 }
 

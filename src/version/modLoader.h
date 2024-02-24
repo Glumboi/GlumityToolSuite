@@ -24,7 +24,6 @@ enum ModLoaderInitState
 class ModLoader
 {
 public:
-    bool skipASI = true;
     static HANDLE gameHandle;
     ModLoader();
     void Init();
@@ -48,10 +47,37 @@ private:
     std::string assemblyCreationTime;
     std::string storedAssemblyCreationTime;
     std::vector<HMODULE> loadedPlugins;
+    bool skipASI = true;
+    bool useConsole = true;
+
     void LoadPlugin(const std::string& path);
     void UpdateCreationTimeFile();
     bool IsGameANewerVersion();
     void LoadAssemblyCreationTime();
+
+    template <typename T>
+    T GetValueFromConfigFile(std::ifstream& cfgFileIn, const std::string& key, bool isBoolOrInt)
+    {
+        if (cfgFileIn.good())
+        {
+            std::string sLine;
+            while (getline(cfgFileIn, sLine))
+            {
+                size_t found = sLine.find(key);
+                if (found != std::string::npos)
+                {
+                    size_t lastEq = sLine.find('=') + 1;
+                    std::string valueStr = sLine.substr(lastEq, sLine.length() - lastEq);
+
+                    if (isBoolOrInt)
+                        return T(std::stoi(valueStr.c_str()));
+                    return T(valueStr.c_str());
+                }
+            }
+        }
+        // Return a default-constructed value if key not found or file not good
+        return T();
+    }
 };
 
 struct KeyboardHandler

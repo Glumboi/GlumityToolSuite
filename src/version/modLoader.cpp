@@ -13,8 +13,16 @@ void ModLoader::Init()
     char buffer[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, buffer);
     workingDirectory = std::string(buffer);
-    TimeStampDebug("Working Directory: " + workingDirectory);
     LoadConfig("./GlummyLoader.cfg");
+
+    if (useConsole)
+    {
+        InitConsole();
+        TimeStampDebug("Initializing ModLoader instance...");
+        TimeStampDebug("Working Directory: " + workingDirectory);
+        TimeStampDebug(skipASI ? "LoadASI: true" : "LoadASI: false");
+    }
+
     DumpIL2CPPBinary();
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)KeyboardHandler::KeyBoardLoop, this, 0, 0);
 }
@@ -26,19 +34,14 @@ void ModLoader::LoadConfig(const std::string fileName)
     {
         std::ofstream cfgFile(fileName);
         cfgFile << "LoadASI=0";
+        cfgFile << "UseConsole=1";
         cfgFile.close();
     }
 
     std::ifstream cfgFileIn(fileName);
-    if (cfgFileIn.good())
-    {
-        std::string sLine;
-        getline(cfgFileIn, sLine);
-        size_t lastEq = sLine.find('=') + 1;
-        std::string toggleSbStr = sLine.substr(lastEq, sLine.length() - lastEq);
-        TimeStampDebug("LOAD ASI: " + toggleSbStr);
-        skipASI = toggleSbStr == "0";
-    }
+
+    skipASI = GetValueFromConfigFile<bool>(cfgFileIn, "LoadASI", true);
+    useConsole = GetValueFromConfigFile<bool>(cfgFileIn, "UseConsole", true);
 }
 
 void ModLoader::LoadPlugin(const std::string& path)
