@@ -27,7 +27,7 @@ void ModLoader::Init()
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)KeyboardHandler::KeyBoardLoop, this, 0, 0);
 }
 
-void ModLoader::LoadConfig(const std::string fileName)
+void ModLoader::LoadConfig(const std::string& fileName)
 {
     //Create a small config file
     if (!std::filesystem::exists(fileName))
