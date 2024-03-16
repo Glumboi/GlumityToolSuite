@@ -62,7 +62,6 @@ namespace CppCLRWinFormsProject
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Form1::typeid));
 			this->tableLayoutPanel1 = (gcnew System::Windows::Forms::TableLayoutPanel());
 			this->tableLayoutPanel2 = (gcnew System::Windows::Forms::TableLayoutPanel());
 			this->button_resetFilter = (gcnew System::Windows::Forms::Button());
@@ -121,6 +120,8 @@ namespace CppCLRWinFormsProject
 			// button_resetFilter
 			//
 			this->button_resetFilter->Dock = System::Windows::Forms::DockStyle::Bottom;
+			this->button_resetFilter->FlatStyle = System::Windows::Forms::FlatStyle::Popup;
+			this->button_resetFilter->ForeColor = System::Drawing::SystemColors::Control;
 			this->button_resetFilter->Location = System::Drawing::Point(683, 24);
 			this->button_resetFilter->Name = L"button_resetFilter";
 			this->button_resetFilter->Size = System::Drawing::Size(132, 21);
@@ -135,6 +136,7 @@ namespace CppCLRWinFormsProject
 			this->label1->Dock = System::Windows::Forms::DockStyle::Left;
 			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
+			this->label1->ForeColor = System::Drawing::SystemColors::Control;
 			this->label1->Location = System::Drawing::Point(3, 0);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(213, 21);
@@ -143,16 +145,24 @@ namespace CppCLRWinFormsProject
 			//
 			// textBox_filterByName
 			//
+			this->textBox_filterByName->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(60)),
+				static_cast<System::Int32>(static_cast<System::Byte>(60)), static_cast<System::Int32>(static_cast<System::Byte>(60)));
+			this->textBox_filterByName->BorderStyle = System::Windows::Forms::BorderStyle::None;
 			this->textBox_filterByName->Dock = System::Windows::Forms::DockStyle::Bottom;
+			this->textBox_filterByName->ForeColor = System::Drawing::SystemColors::Control;
 			this->textBox_filterByName->Location = System::Drawing::Point(3, 25);
 			this->textBox_filterByName->Name = L"textBox_filterByName";
-			this->textBox_filterByName->Size = System::Drawing::Size(674, 20);
+			this->textBox_filterByName->Size = System::Drawing::Size(674, 13);
 			this->textBox_filterByName->TabIndex = 1;
 			this->textBox_filterByName->TextChanged += gcnew System::EventHandler(this, &Form1::textBox_filterByName_TextChanged);
 			//
 			// listBox_processes
 			//
+			this->listBox_processes->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(40)),
+				static_cast<System::Int32>(static_cast<System::Byte>(40)), static_cast<System::Int32>(static_cast<System::Byte>(40)));
+			this->listBox_processes->BorderStyle = System::Windows::Forms::BorderStyle::None;
 			this->listBox_processes->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->listBox_processes->ForeColor = System::Drawing::SystemColors::Control;
 			this->listBox_processes->FormattingEnabled = true;
 			this->listBox_processes->Location = System::Drawing::Point(3, 57);
 			this->listBox_processes->Name = L"listBox_processes";
@@ -162,6 +172,8 @@ namespace CppCLRWinFormsProject
 			// button_refreshProcesses
 			//
 			this->button_refreshProcesses->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->button_refreshProcesses->FlatStyle = System::Windows::Forms::FlatStyle::Popup;
+			this->button_refreshProcesses->ForeColor = System::Drawing::SystemColors::Control;
 			this->button_refreshProcesses->Location = System::Drawing::Point(827, 57);
 			this->button_refreshProcesses->Name = L"button_refreshProcesses";
 			this->button_refreshProcesses->Size = System::Drawing::Size(190, 476);
@@ -188,6 +200,8 @@ namespace CppCLRWinFormsProject
 			// button_inject
 			//
 			this->button_inject->Dock = System::Windows::Forms::DockStyle::Bottom;
+			this->button_inject->FlatStyle = System::Windows::Forms::FlatStyle::Popup;
+			this->button_inject->ForeColor = System::Drawing::SystemColors::Control;
 			this->button_inject->Location = System::Drawing::Point(3, 24);
 			this->button_inject->Name = L"button_inject";
 			this->button_inject->Size = System::Drawing::Size(184, 21);
@@ -200,6 +214,8 @@ namespace CppCLRWinFormsProject
 			//
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(40)), static_cast<System::Int32>(static_cast<System::Byte>(40)),
+				static_cast<System::Int32>(static_cast<System::Byte>(40)));
 			this->ClientSize = System::Drawing::Size(1020, 536);
 			this->Controls->Add(this->tableLayoutPanel1);
 			this->Name = L"Form1";
