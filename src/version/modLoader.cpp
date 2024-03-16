@@ -14,7 +14,6 @@ void ModLoader::Init()
     GetCurrentDirectory(MAX_PATH, buffer);
     workingDirectory = std::string(buffer);
     LoadConfig("./GlummyLoader.cfg");
-
     if (useConsole)
     {
         InitConsole();
@@ -33,8 +32,8 @@ void ModLoader::LoadConfig(const std::string fileName)
     if (!std::filesystem::exists(fileName))
     {
         std::ofstream cfgFile(fileName);
-        cfgFile << "LoadASI=0";
-        cfgFile << "UseConsole=1";
+        cfgFile << "LoadASI=0\n";
+        cfgFile << "UseConsole=1\n";
         cfgFile.close();
     }
 
@@ -216,7 +215,6 @@ void ModLoader::DumpIL2CPPBinary()
         UpdateCreationTimeFile();
         SatisfyAllPluginRequests();
     }
-
     LoadAllPlugins();
 }
 
@@ -277,7 +275,7 @@ void KeyboardHandler::KeyBoardLoop(ModLoader* loaderInstance)
     {
         Sleep(1);
 
-        if (GetKeyState(VK_F9) KEYISPRESSED)
+        if (GetKeyState(ModLoader::reloadKey) KEYISPRESSED)
         {
             TimeStampDebug("F9 pressed, reloading plugins!");
             loaderInstance->UnloadAllPlugins();

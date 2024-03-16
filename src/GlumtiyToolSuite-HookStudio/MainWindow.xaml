@@ -1,0 +1,117 @@
+﻿<ui:FluentWindow
+    Background="#2d2d2d"
+    ExtendsContentIntoTitleBar="True"
+    Height="650"
+    Title="MainWindow"
+    Width="900"
+    WindowBackdropType="Mica"
+    WindowCornerPreference="Round"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d"
+    x:Class="GlumtiyToolSuite_HookStudio.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GlumtiyToolSuite_HookStudio"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <ui:TitleBar
+                Height="30"
+                Title="Glummy_WPF_UI_Template_MVVM"
+                x:Name="TitleBar" />
+            <Menu>
+                <MenuItem Header="File" />
+                <TextBlock FontWeight="SemiBold" Text="scripts.json status: Initialized" />
+                <TextBlock FontWeight="SemiBold" Text="hooks.h status: Initialized" />
+            </Menu>
+        </StackPanel>
+
+        <Border Grid.Row="1" Padding="8">
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="3.2*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock FontWeight="SemiBold" Text="Classes" />
+                    <TreeView Grid.Row="1">
+                        <ui:TreeViewItem Header="Player">
+                            <ui:TreeViewItem Header="Jump : void">
+                                <ui:Button>Add to hooks.h</ui:Button>
+                                <ui:Button>Copy json request</ui:Button>
+                            </ui:TreeViewItem>
+                            <ui:TreeViewItem Header="Crouch : void">
+                                <ui:Button>Add to hooks.h</ui:Button>
+                                <ui:Button>Copy json request</ui:Button>
+                            </ui:TreeViewItem>
+                        </ui:TreeViewItem>
+                        <ui:TreeViewItem Header="Cpu" />
+                        <ui:TreeViewItem Header="CpuSocket" />
+                        <ui:TreeViewItem Header="CpuSocketExt" />
+                        <ui:TreeViewItem Header="... and so on" />
+                    </TreeView>
+                </Grid>
+
+                <ui:RichTextBox Grid.Column="1" Loaded="FrameworkElement_OnLoaded" />
+                <GridSplitter
+                    Background="Silver"
+                    BorderThickness="1"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,4,0"
+                    VerticalAlignment="Stretch"
+                    Width="3" />
+                <GridSplitter
+                    Background="Silver"
+                    BorderThickness="1"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left"
+                    Margin="4,0,0,0"
+                    VerticalAlignment="Stretch"
+                    Width="3" />
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock FontWeight="Bold" Margin="6,0,0,0">Actions</TextBlock>
+                    <StackPanel Grid.Row="1">
+                        <ui:Button
+                            Content="Export as hooks.h"
+                            HorizontalAlignment="Stretch"
+                            Margin="10" />
+                        <ui:Button
+                            Content="Export as hooks.h"
+                            HorizontalAlignment="Stretch"
+                            Margin="10" />
+                        <ui:Button
+                            Content="Export as hooks.h"
+                            HorizontalAlignment="Stretch"
+                            Margin="10" />
+                        <ui:Button
+                            Content="Export as hooks.h"
+                            HorizontalAlignment="Stretch"
+                            Margin="10" />
+                        <ui:Button
+                            Content="Export as hooks.h"
+                            HorizontalAlignment="Stretch"
+                            Margin="10" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</ui:FluentWindow>

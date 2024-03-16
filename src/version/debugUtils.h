@@ -4,14 +4,14 @@
 #include <iostream>
 #define LOGFILE "GlummyLoaderLog.txt"
 
-inline void DebugToFile(std::string szInput)
+inline void DebugToFile(const std::string& szInput)
 {
     std::ofstream log(LOGFILE, std::ios_base::app | std::ios_base::out);
     log << szInput;
     log << "\n";
 }
 
-inline void PutDebug(std::string msg)
+inline void PutDebug(const std::string& msg)
 {
     std::cout << "[GlummyLoader]: " << msg << "\n";
 

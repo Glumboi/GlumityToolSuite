@@ -25,6 +25,7 @@ class ModLoader
 {
 public:
     static HANDLE gameHandle;
+    inline static BYTE reloadKey = VK_F9;
     ModLoader();
     void Init();
     void LoadConfig(const std::string fileName);
@@ -49,7 +50,6 @@ private:
     std::vector<HMODULE> loadedPlugins;
     bool skipASI = true;
     bool useConsole = true;
-
     void LoadPlugin(const std::string& path);
     void UpdateCreationTimeFile();
     bool IsGameANewerVersion();
