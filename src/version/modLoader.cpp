@@ -13,6 +13,7 @@ void ModLoader::Init()
     char buffer[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, buffer);
     workingDirectory = std::string(buffer);
+
     LoadConfig("./GlummyLoader.cfg");
     if (useConsole)
     {
@@ -41,6 +42,7 @@ void ModLoader::LoadConfig(const std::string& fileName)
 
     skipASI = GetValueFromConfigFile<bool>(cfgFileIn, "LoadASI", true);
     useConsole = GetValueFromConfigFile<bool>(cfgFileIn, "UseConsole", true);
+    cfgFileIn.close();
 }
 
 void ModLoader::LoadPlugin(const std::string& path)
