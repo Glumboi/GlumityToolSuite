@@ -285,7 +285,7 @@ void KeyboardHandler::KeyBoardLoop(ModLoader* loaderInstance)
 	{
 		Sleep(1);
 
-		if (GetKeyState(VK_F9))//ModLoader::m_reloadKey))
+		if (GetKeyState(VK_F9) < 0) // -> Implement later ModLoader::m_reloadKey))
 		{
 			TimeStampDebug("F9 pressed, reloading plugins!");
 			loaderInstance->UnloadAllPlugins();

@@ -10,10 +10,12 @@
 HMODULE hModule = LoadLibrary("C:\\Windows\\System32\\version.dll");
 HANDLE prHandle = GetCurrentProcess();
 
+// This is global because the keyboard loop wouldnt work otherwise
+ModLoader modLoader{};
+
 void Setup()
 {
 	CLEAR_LOG();
-	ModLoader modLoader{};
 	modLoader.LaunchModLoaderThread();
 }
 
