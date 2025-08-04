@@ -10,40 +10,38 @@
 HMODULE hModule = LoadLibrary("C:\\Windows\\System32\\version.dll");
 HANDLE prHandle = GetCurrentProcess();
 
-ModLoader* modLoaderInstance = nullptr;
-
-void Init()
+void Setup()
 {
-    //Clear log file
-    std::filesystem::remove(LOGFILE);
-    modLoaderInstance = new ModLoader();
+	CLEAR_LOG();
+	ModLoader modLoader{};
+	modLoader.LaunchModLoaderThread();
 }
 
 void Main()
 {
-    //Check if we are already running
-    HANDLE hMutex = CreateMutex(NULL, TRUE, "GlummysPCBS2ModdingToolsuite");
-    if (GetLastError() == ERROR_ALREADY_EXISTS)
-    {
-        //We are already running, stop
-        CloseHandle(hMutex);
-        TimeStampDebug("An instance is already running, stopping duplicated instance...");
-        return;
-    }
-    Init();
+	//Check if we are already running
+	HANDLE hMutex = CreateMutex(NULL, TRUE, "GlummysPCBS2ModdingToolsuite");
+	if (GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		//We are already running, stop
+		CloseHandle(hMutex);
+		TimeStampDebug("An instance is already running, stopping duplicated instance...");
+		return;
+	}
+	Setup();
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
-    switch (ul_reason_for_call)
-    {
-    case DLL_PROCESS_ATTACH:
-        CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Main, 0, 0, 0);
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH:
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Main, 0, 0, 0);
+	case DLL_THREAD_ATTACH:
+	case DLL_THREAD_DETACH:
+	case DLL_PROCESS_DETACH:
 
-        break;
-    }
-    return TRUE;
+		break;
+	}
+	return TRUE;
 }

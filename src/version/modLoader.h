@@ -9,9 +9,6 @@
 #include <winnt.h>
 #include <thread>
 
-#define KEYISPRESSED < 0
-#define KEYISNOTPRESSED > 0
-
 enum ModLoaderInitState
 {
 	//--> implement at some point
@@ -24,33 +21,46 @@ enum ModLoaderInitState
 class ModLoader
 {
 public:
-	static HANDLE gameHandle;
-	inline static BYTE reloadKey = VK_F9;
+	static HANDLE m_gameHandle;
+	inline static BYTE m_reloadKey = VK_F9;
+	
 	ModLoader();
-	void Init();
+	void LaunchModLoaderThread();
+
 	void LoadConfig(const std::string& fileName);
+	
 	void LoadAllPlugins();
 	void UnloadAllPlugins();
+	
 	void DumpIL2CPPBinary();
+	
 	void SatisfyAllPluginRequests();
 
 private:
-	std::string workingDirectory;
-	std::string pluginsPath;
-	std::string appDataPath;
-	std::string gameAsmPath;
-	std::string assemblyCreationTimeFile;
-	std::string gameMetadataPath;
-	std::string dumperPath;
-	std::string addressGetterPath;
-	std::string command;
-	std::string dumpOutPath;
-	std::string assemblyCreationTime;
-	std::string storedAssemblyCreationTime;
-	std::vector<HMODULE> loadedPlugins;
-	bool skipASI = true;
-	bool useConsole = true;
+	inline static std::string const DEFAULT_CONFIG = 
+		"LoadASI=0\nUseConsole=1\nReloadKey=120";
+
+	std::string m_workingDirectory;
+	std::string m_pluginsPath;
+	std::string m_appDataPath;
+	std::string m_gameAsmPath;
+	std::string m_assemblyCreationTimeFile;
+	std::string m_gameMetadataPath;
+	std::string m_dumperPath;
+	std::string m_addressGetterPath;
+	std::string m_command;
+	std::string m_dumpOutPath;
+	std::string m_assemblyCreationTime;
+	std::string m_storedAssemblyCreationTime;
+
+	std::vector<HMODULE> m_loadedPlugins;
+
+	bool m_skipASI = true;
+	bool m_useConsole = true;
+
+	void LoadPluginsFromPath(std::string const& path);
 	void LoadPlugin(const std::string& path);
+
 	void UpdateCreationTimeFile();
 	bool IsGameANewerVersion();
 	void LoadAssemblyCreationTime();
